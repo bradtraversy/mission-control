@@ -40,14 +40,17 @@ Dev on trav-dev at `~/Code/mission-control`. Prod on trav-ai as a systemd-user s
 - **Vault is the database.** Every read and write is a markdown file on disk. Parse YAML frontmatter with `gray-matter`.
 - **Writes must be Obsidian-compatible** per `Core/Context/AI Rules.md` in the vault. No hidden state, no sidecar files that Brad wouldn't also write by hand.
 - **Exclude these vault paths from generic parsing**: `CLAUDE.md`, `AGENTS.md`, `HEARTBEAT.md`, `SOUL.md`, `USER.md`, `MEMORY.md`, `TOOLS.md`, `IDENTITY.md`, `Core/Context/AI Rules.md`, `.claude/`, `.openclaw/`, `.obsidian/`, `.trash/`, any dotfile/dotdir.
-- **Tasks vs Todos** — distinct folders, distinct lifecycles:
-  - `Todos/` = Brad's personal list, `#1`–`#N` ID system, Now/Soon/Later.
-  - `Tasks/` = agent work units, one markdown file per task, frontmatter-driven lifecycle (`status`, `agent`, `project`, `priority`).
+- **Todos vs Tasks** — split by *time horizon*, not by human-vs-agent. Both Brad and agents write to both:
+  - `Todos/` (existing) = long-term curated backlog. `Now.md` / `Soon.md` / `Later.md`, global `#N` IDs, brand tags. Unchanged format.
+  - `Tasks/` (new) = short-term quick queue. One file per task: `YYYY-MM-DD-<slug>.md`. Frontmatter: `type | created | status | agent` only — no id, priority, project, or tags. Tags go in the body (`#vidpipe`, `#high`).
+- **Task statuses**: `queued` → `claimed` → `done` (3 states). Done tasks auto-archive to `Tasks/archive/YYYY-MM/` after 7 days.
 - **Agent routing** via the `agent` frontmatter field on `Tasks/*.md`:
-  - `travis` — Travis's heartbeat on trav-ai picks up queued tasks.
+  - `travis` — Travis's heartbeat on trav-ai picks up queued tasks. **Travis only reads `Tasks/`, never `Todos/`.**
   - `claude` — Claude sessions pick up queued tasks at `/resume` time.
   - `brad` — self-assigned; no agent claims these.
+- **Ref-to-Todo**: a Task body can reference a Todo with `Ref: #N`. The completing agent flips the Task to `done` and also checks off `#N` in the matching Todo file.
 - **Pause marker**: `Tasks/_control.json` with `{"paused": true}`. All agents must check this before pulling work.
+- **Narrow write surface.** MC only writes five structured operations: (1) check off a todo, (2) move a todo between Now/Soon/Later, (3) add a new todo (next `#N`), (4) change a task's status, (5) add a new task. Toggle Pause also writes `Tasks/_control.json`. Anything else is read-only with an "Edit in Obsidian" button that opens the file via `obsidian://` URI.
 - **Live updates**: chokidar watches the vault on the server side, SSE pushes change events to the browser. Debounce ~100ms.
 - **Dark-first UI**, Linear-ish aesthetic. Palette tokens in `globals.css` `@theme`. System font stack, no web fonts by default.
 

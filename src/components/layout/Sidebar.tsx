@@ -9,6 +9,7 @@ import {
   Home,
   Inbox,
   ListChecks,
+  ListTodo,
   Network,
   PlaySquare,
   Settings,
@@ -18,6 +19,7 @@ import { NavLink } from "./NavLink";
 
 const TABS = [
   { href: "/", label: "Home", icon: Home },
+  { href: "/todos", label: "Todos", icon: ListTodo },
   { href: "/tasks", label: "Tasks", icon: ListChecks },
   { href: "/projects", label: "Projects", icon: Folders },
   { href: "/sessions", label: "Sessions", icon: History },
