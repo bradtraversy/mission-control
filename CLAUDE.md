@@ -105,3 +105,4 @@ Copy `.env.example` to `.env.local` for local dev.
 - **Bug fixes** land on a `fix/<name>` branch. Same flow.
 - **Trivial edits** go straight to `main` — copy fixes, CLAUDE.md tweaks, `.gitignore` tweaks, typos, small config nudges, stub descriptions. Anything where a PR would be ceremony without payoff.
 - Every push is preceded by a local verification (dev server boots clean, probe runs, types check). `main` is the reviewed work stream.
+- NEVER PUT CLAUDE IN THE COMMIT MESSAGE!
