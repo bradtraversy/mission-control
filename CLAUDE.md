@@ -69,3 +69,29 @@ Copy `.env.example` to `.env.local` for local dev.
 - **Session logs** (this project): `Core/Sessions/Claude/*mission-control*.md`
 - **Resume command**: `/resume mission-control`
 - **Network dashboard** (precedent for deploy pattern): `travxlabs/network-dashboard`, runbook at `Network/Runbooks/Deploy Network Dashboard to trav-ai.md`
+
+## Code Conventions
+
+- Strict mode enabled
+- No `any` types - use proper typing or `unknown`
+- Define interfaces for all props, API responses, and data models
+- Use type inference where obvious, explicit types where helpful
+
+## React
+
+- Functional components only (no class components)
+- Use hooks for state and side effects
+- Keep components focused - one job per component
+- Extract reusable logic into custom hooks
+
+## Next.js
+
+- Server components by default
+- Only use `'use client'` when needed (interactivity, hooks, browser APIs)
+- Use Server Actions for form submissions and simple mutations
+
+## Code Quality
+
+- No commented-out code unless specified
+- No unused imports or variables
+- Keep functions under 50 lines when possible
