@@ -101,8 +101,8 @@ Copy `.env.example` to `.env.local` for local dev.
 
 ## Branching
 
-- **Feature-sized chunks** land on a `feature/<name>` branch. Open a PR, merge when ready, delete the branch. A "feature-sized chunk" = one Phase-plan milestone from the Build Brief (a tab, the vault reader, the write layer, SSE wiring, etc.).
-- **Bug fixes** land on a `fix/<name>` branch. Same flow.
-- **Trivial edits** go straight to `main` — copy fixes, CLAUDE.md tweaks, `.gitignore` tweaks, typos, small config nudges, stub descriptions. Anything where a PR would be ceremony without payoff.
+- **Feature-sized chunks** land on a `feature/<name>` branch. When done, merge into `main` locally, push, and delete the branch (`git branch -d <name>` + `git push origin --delete <name>`). No PR — Brad is the only reviewer, the branch itself is the isolation. A "feature-sized chunk" = one Phase-plan milestone from the Build Brief (a tab, the vault reader, the write layer, SSE wiring, etc.).
+- **Bug fixes** land on a `fix/<name>` branch. Same local-merge flow.
+- **Trivial edits** go straight to `main` — copy fixes, CLAUDE.md tweaks, `.gitignore` tweaks, typos, small config nudges, stub descriptions.
 - Every push is preceded by a local verification (dev server boots clean, probe runs, types check). `main` is the reviewed work stream.
 - NEVER PUT CLAUDE IN THE COMMIT MESSAGE!
