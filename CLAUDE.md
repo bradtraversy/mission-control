@@ -40,7 +40,7 @@ Dev on trav-dev at `~/Code/mission-control`. Prod on trav-ai as a systemd-user s
 - **Vault is the database.** Every read and write is a markdown file on disk. Parse YAML frontmatter with `gray-matter`.
 - **Writes must be Obsidian-compatible** per `Core/Context/AI Rules.md` in the vault. No hidden state, no sidecar files that Brad wouldn't also write by hand.
 - **Exclude these vault paths from generic parsing**: `CLAUDE.md`, `AGENTS.md`, `HEARTBEAT.md`, `SOUL.md`, `USER.md`, `MEMORY.md`, `TOOLS.md`, `IDENTITY.md`, `Core/Context/AI Rules.md`, `.claude/`, `.openclaw/`, `.obsidian/`, `.trash/`, any dotfile/dotdir.
-- **Todos vs Tasks** — split by *time horizon*, not by human-vs-agent. Both Brad and agents write to both:
+- **Todos vs Tasks** — split by _time horizon_, not by human-vs-agent. Both Brad and agents write to both:
   - `Todos/` (existing) = long-term curated backlog. `Now.md` / `Soon.md` / `Later.md`, global `#N` IDs, brand tags. Unchanged format.
   - `Tasks/` (new) = short-term quick queue. One file per task: `YYYY-MM-DD-<slug>.md`. Frontmatter: `type | created | status | agent` only — no id, priority, project, or tags. Tags go in the body (`#vidpipe`, `#high`).
 - **Task statuses**: `queued` → `claimed` → `done` (3 states). Done tasks auto-archive to `Tasks/archive/YYYY-MM/` after 7 days.
@@ -98,3 +98,10 @@ Copy `.env.example` to `.env.local` for local dev.
 - No commented-out code unless specified
 - No unused imports or variables
 - Keep functions under 50 lines when possible
+
+## Branching
+
+- **Feature-sized chunks** land on a `feature/<name>` branch. Open a PR, merge when ready, delete the branch. A "feature-sized chunk" = one Phase-plan milestone from the Build Brief (a tab, the vault reader, the write layer, SSE wiring, etc.).
+- **Bug fixes** land on a `fix/<name>` branch. Same flow.
+- **Trivial edits** go straight to `main` — copy fixes, CLAUDE.md tweaks, `.gitignore` tweaks, typos, small config nudges, stub descriptions. Anything where a PR would be ceremony without payoff.
+- Every push is preceded by a local verification (dev server boots clean, probe runs, types check). `main` is the reviewed work stream.
