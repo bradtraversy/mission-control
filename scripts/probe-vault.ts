@@ -15,6 +15,10 @@ import {
   getMemory,
   getNetworkFeeds,
   getCurrentState,
+  getSponsors,
+  getServiceHealth,
+  getAutomationHealth,
+  formatUsd,
 } from "../src/lib";
 
 const heading = (title: string): void => {
@@ -84,6 +88,29 @@ async function main(): Promise<void> {
     `  immediateActions=${cs.immediateActions.length} recentDecisions=${cs.recentDecisions.length} openQuestions=${cs.openQuestions.length}`,
   );
   console.log(`  sponsorsRaw preview: ${cs.sponsorsRaw.split("\n")[0] ?? ""}`);
+
+  heading("SPONSORS");
+  const sponsors = await getSponsors();
+  for (const s of sponsors) {
+    console.log(
+      `  ${s.name.padEnd(12)} ${formatUsd(s.paidUsd).padStart(5)}/${formatUsd(s.totalUsd).padStart(5)} · ${s.isDone ? "done" : "open"} · due=${s.due}`,
+    );
+  }
+  const totalOutstanding = sponsors.reduce(
+    (sum, s) => sum + s.outstandingUsd,
+    0,
+  );
+  console.log(`  total outstanding: ${formatUsd(totalOutstanding)}`);
+
+  heading("HEALTH");
+  const svc = await getServiceHealth();
+  console.log(
+    `  services: ${svc.activeServices}/${svc.totalServices} active (updated ${svc.lastUpdated})`,
+  );
+  const auto = await getAutomationHealth();
+  console.log(
+    `  automations: green=${auto.green} yellow=${auto.yellow} red=${auto.red} unknown=${auto.unknown} (total=${auto.total})`,
+  );
 }
 
 main().catch((err) => {
