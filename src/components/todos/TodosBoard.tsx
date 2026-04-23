@@ -295,7 +295,7 @@ function TodoRow({
 }: {
   todo: TodoItem;
   onToggle: (todo: TodoItem) => void;
-  onMove: (todo: TodoItem, to: TodoColumn) => void;
+  onMove?: (todo: TodoItem, to: TodoColumn) => void;
   disabled: boolean;
 }) {
   const prev = prevColumn(todo.column);
@@ -323,20 +323,22 @@ function TodoRow({
       >
         {todo.text}
       </span>
-      <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-        <MoveButton
-          direction="left"
-          target={prev}
-          disabled={disabled || !prev}
-          onClick={() => prev && onMove(todo, prev)}
-        />
-        <MoveButton
-          direction="right"
-          target={next}
-          disabled={disabled || !next}
-          onClick={() => next && onMove(todo, next)}
-        />
-      </div>
+      {onMove && (
+        <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+          <MoveButton
+            direction="left"
+            target={prev}
+            disabled={disabled || !prev}
+            onClick={() => prev && onMove(todo, prev)}
+          />
+          <MoveButton
+            direction="right"
+            target={next}
+            disabled={disabled || !next}
+            onClick={() => next && onMove(todo, next)}
+          />
+        </div>
+      )}
       {todo.tags.length > 0 && (
         <div className="flex gap-1 shrink-0 flex-wrap justify-end">
           {todo.tags.map((tag) => (

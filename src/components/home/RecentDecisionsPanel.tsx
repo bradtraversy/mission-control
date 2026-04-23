@@ -15,7 +15,7 @@ export function RecentDecisionsPanel({ items }: Props) {
         ) : (
           items.map((item, i) => {
             const clean = stripMarkdownBold(item);
-            const dateMatch = clean.match(/^(\d{4}-\d{2}-\d{2}):\s*(.+)$/s);
+            const dateMatch = clean.match(/^(\d{4}-\d{2}-\d{2}):\s*([\s\S]+)$/);
             const date = dateMatch?.[1] ?? null;
             const text = dateMatch?.[2] ?? clean;
             return (

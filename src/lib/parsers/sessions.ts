@@ -10,7 +10,7 @@ function deriveTitle(slug: string, body: string, date: string | null): string {
   }
   const heading = body.match(HEADING_RE)?.[1]?.trim();
   if (!heading) return "Daily log";
-  let cleaned = heading
+  const cleaned = heading
     .replace(/^Session\s+/i, "")
     .replaceAll(date, "")
     .replace(/^[—\-–:\s]+|[—\-–:\s]+$/g, "")
