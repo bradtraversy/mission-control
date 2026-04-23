@@ -20,7 +20,7 @@ export function DigestPreviewPanel({ digest }: Props) {
     <Card>
       <CardHeader
         title="Today's Digest"
-        meta={digest?.frontmatter.date ?? "—"}
+        meta={digest?.date ?? "—"}
         action={
           <Link
             href="/research"

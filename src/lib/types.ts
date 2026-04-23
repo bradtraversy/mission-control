@@ -88,7 +88,9 @@ export type DigestFrontmatter = {
   generated_by?: string;
 };
 
-export type Digest = ParsedMarkdown<DigestFrontmatter>;
+export type Digest = ParsedMarkdown<DigestFrontmatter> & {
+  date: string | null;
+};
 
 // Memory
 export type MemoryEntry = ParsedMarkdown;

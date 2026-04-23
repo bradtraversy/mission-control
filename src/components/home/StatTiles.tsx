@@ -76,7 +76,7 @@ export function StatTiles({
       />
       <Tile
         label="Last Digest"
-        value={latestDigest?.frontmatter.date ?? "—"}
+        value={latestDigest?.date ?? "—"}
         sub={
           latestDigest?.frontmatter.topics
             ? `${latestDigest.frontmatter.topics.length} topics`
