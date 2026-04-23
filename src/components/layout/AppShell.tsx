@@ -1,10 +1,12 @@
 import { LiveActivityRail } from "./LiveActivityRail";
+import { LiveUpdater } from "./LiveUpdater";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="h-screen flex flex-col bg-background text-foreground">
+      <LiveUpdater />
       <header className="h-12 shrink-0">
         <TopBar />
       </header>
