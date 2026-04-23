@@ -27,23 +27,29 @@ export function TodosBoard({ snapshot, columnUris }: Props) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const toggleDone = (todo: TodoItem) => {
+  const patchTodo = (todo: TodoItem, body: object, label: string) => {
     startTransition(async () => {
       const res = await fetch(`/api/todos/${todo.column}/${todo.id}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ done: !todo.done }),
+        body: JSON.stringify(body),
       });
       if (!res.ok) {
         const { error } = (await res.json().catch(() => ({ error: "write failed" }))) as {
           error?: string;
         };
-        alert(`Failed to update #${todo.id}: ${error ?? "unknown error"}`);
+        alert(`Failed to ${label} #${todo.id}: ${error ?? "unknown error"}`);
         return;
       }
       router.refresh();
     });
   };
+
+  const toggleDone = (todo: TodoItem) =>
+    patchTodo(todo, { done: !todo.done }, "update");
+
+  const moveTodoTo = (todo: TodoItem, to: TodoColumn) =>
+    patchTodo(todo, { column: to }, `move to ${to}`);
 
   const allTags = useMemo(() => {
     const counts = new Map<string, number>();
@@ -77,12 +83,23 @@ export function TodosBoard({ snapshot, columnUris }: Props) {
             items={filter(snapshot[col])}
             editUri={columnUris[col]}
             onToggle={toggleDone}
+            onMove={moveTodoTo}
             disabled={isPending}
           />
         ))}
       </div>
     </div>
   );
+}
+
+const COLUMN_ORDER: TodoColumn[] = ["now", "soon", "later"];
+function prevColumn(c: TodoColumn): TodoColumn | null {
+  const i = COLUMN_ORDER.indexOf(c);
+  return i > 0 ? COLUMN_ORDER[i - 1] : null;
+}
+function nextColumnOf(c: TodoColumn): TodoColumn | null {
+  const i = COLUMN_ORDER.indexOf(c);
+  return i < COLUMN_ORDER.length - 1 ? COLUMN_ORDER[i + 1] : null;
 }
 
 function FilterBar({
@@ -138,12 +155,14 @@ function Column({
   items,
   editUri,
   onToggle,
+  onMove,
   disabled,
 }: {
   column: TodoColumn;
   items: TodoItem[];
   editUri: string;
   onToggle: (todo: TodoItem) => void;
+  onMove: (todo: TodoItem, to: TodoColumn) => void;
   disabled: boolean;
 }) {
   const open = items.filter((t) => !t.done);
@@ -174,6 +193,7 @@ function Column({
             key={`${t.column}-${t.id}`}
             todo={t}
             onToggle={onToggle}
+            onMove={onMove}
             disabled={disabled}
           />
         ))}
@@ -200,14 +220,18 @@ function Column({
 function TodoRow({
   todo,
   onToggle,
+  onMove,
   disabled,
 }: {
   todo: TodoItem;
   onToggle: (todo: TodoItem) => void;
+  onMove: (todo: TodoItem, to: TodoColumn) => void;
   disabled: boolean;
 }) {
+  const prev = prevColumn(todo.column);
+  const next = nextColumnOf(todo.column);
   return (
-    <div className="flex items-start gap-2 py-1">
+    <div className="group flex items-start gap-2 py-1">
       <button
         type="button"
         onClick={() => onToggle(todo)}
@@ -229,6 +253,20 @@ function TodoRow({
       >
         {todo.text}
       </span>
+      <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+        <MoveButton
+          direction="left"
+          target={prev}
+          disabled={disabled || !prev}
+          onClick={() => prev && onMove(todo, prev)}
+        />
+        <MoveButton
+          direction="right"
+          target={next}
+          disabled={disabled || !next}
+          onClick={() => next && onMove(todo, next)}
+        />
+      </div>
       {todo.tags.length > 0 && (
         <div className="flex gap-1 shrink-0 flex-wrap justify-end">
           {todo.tags.map((tag) => (
@@ -242,5 +280,30 @@ function TodoRow({
         </div>
       )}
     </div>
+  );
+}
+
+function MoveButton({
+  direction,
+  target,
+  disabled,
+  onClick,
+}: {
+  direction: "left" | "right";
+  target: TodoColumn | null;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      title={target ? `Move to ${target}` : ""}
+      aria-label={target ? `Move to ${target}` : "no move available"}
+      className="text-muted/60 hover:text-foreground disabled:text-muted/20 disabled:cursor-not-allowed px-1 text-xs leading-none"
+    >
+      {direction === "left" ? "←" : "→"}
+    </button>
   );
 }

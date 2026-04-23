@@ -60,3 +60,42 @@ export async function setTodoDone(
   }
   await writeFileAtomic(file, updated.join("\n"));
 }
+
+export async function moveTodo(
+  fromColumn: TodoColumn,
+  id: number,
+  toColumn: TodoColumn,
+): Promise<void> {
+  if (fromColumn === toColumn) return;
+
+  const fromFile = FILE_MAP[fromColumn];
+  const toFile = FILE_MAP[toColumn];
+  const re = todoLineRegex(id);
+
+  const fromRaw = await readFile(fromFile);
+  const fromLines = fromRaw.split(/\r?\n/);
+  const lineIndex = fromLines.findIndex((line) => re.test(line));
+  if (lineIndex === -1) {
+    throw new Error(`Todo #${id} not found in ${fromFile}`);
+  }
+  const movedLine = fromLines[lineIndex];
+  fromLines.splice(lineIndex, 1);
+
+  const toRaw = await readFile(toFile);
+  const updatedTo = insertAboveDone(toRaw, movedLine);
+
+  await writeFileAtomic(fromFile, fromLines.join("\n"));
+  await writeFileAtomic(toFile, updatedTo);
+}
+
+function insertAboveDone(raw: string, line: string): string {
+  const hasTrailingNewline = raw.endsWith("\n");
+  const toLines = (hasTrailingNewline ? raw.slice(0, -1) : raw).split(/\r?\n/);
+  const firstDoneIdx = toLines.findIndex((l) => /^- \[x\]/.test(l));
+  if (firstDoneIdx === -1) {
+    toLines.push(line);
+  } else {
+    toLines.splice(firstDoneIdx, 0, line);
+  }
+  return toLines.join("\n") + (hasTrailingNewline ? "\n" : "");
+}

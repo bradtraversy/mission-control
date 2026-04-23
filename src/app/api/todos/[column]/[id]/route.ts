@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { setTodoDone } from "@/lib/writers/todos";
+import { moveTodo, setTodoDone } from "@/lib/writers/todos";
 import type { TodoColumn } from "@/lib/types";
 
 const VALID_COLUMNS: ReadonlySet<TodoColumn> = new Set(["now", "soon", "later"]);
@@ -19,17 +19,34 @@ export async function PATCH(request: Request, { params }: Params) {
   }
 
   const body = (await request.json().catch(() => null)) as
-    | { done?: boolean }
+    | { done?: boolean; column?: string }
     | null;
-  if (!body || typeof body.done !== "boolean") {
+  if (!body) {
+    return NextResponse.json({ error: "body required" }, { status: 400 });
+  }
+
+  const hasDone = typeof body.done === "boolean";
+  const hasColumn = typeof body.column === "string";
+  if (hasDone === hasColumn) {
     return NextResponse.json(
-      { error: "body.done (boolean) is required" },
+      { error: "body must include exactly one of {done, column}" },
       { status: 400 },
     );
   }
 
   try {
-    await setTodoDone(column as TodoColumn, idNum, body.done);
+    if (hasDone) {
+      await setTodoDone(column as TodoColumn, idNum, body.done as boolean);
+    } else {
+      const target = body.column as TodoColumn;
+      if (!VALID_COLUMNS.has(target)) {
+        return NextResponse.json(
+          { error: "invalid target column" },
+          { status: 400 },
+        );
+      }
+      await moveTodo(column as TodoColumn, idNum, target);
+    }
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : "write failed";
