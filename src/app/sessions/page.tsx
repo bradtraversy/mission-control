@@ -1,10 +1,19 @@
-import { TabStub } from "@/components/layout/TabStub";
+import { SessionsList } from "@/components/sessions/SessionsList";
+import { getSessions } from "@/lib";
 
-export default function Page() {
+export default async function Page() {
+  const sessions = await getSessions();
+
   return (
-    <TabStub
-      title="Sessions"
-      description="Unified reverse-chronological feed merging Core/Sessions/Claude/ and Core/Sessions/OpenClaw/. Filter by agent."
-    />
+    <div className="p-6 space-y-5">
+      <header className="space-y-1">
+        <h1 className="text-lg font-medium tracking-tight">Sessions</h1>
+        <p className="text-[12px] text-muted">
+          Unified feed from Claude and Travis · {sessions.length} total ·
+          newest first
+        </p>
+      </header>
+      <SessionsList sessions={sessions} />
+    </div>
   );
 }
