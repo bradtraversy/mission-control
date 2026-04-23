@@ -76,7 +76,7 @@ export type SessionFrontmatter = {
   outcome?: string;
 };
 
-export type SessionSource = "claude" | "openclaw";
+export type SessionSource = "claude-code" | "openclaw";
 
 export type Session = ParsedMarkdown<SessionFrontmatter> & {
   source: SessionSource;

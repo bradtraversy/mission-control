@@ -24,12 +24,12 @@ export async function getSessions(
 ): Promise<Session[]> {
   const sources: SessionSource[] = opts.source
     ? [opts.source]
-    : ["claude", "openclaw"];
+    : ["claude-code", "openclaw"];
 
   const groups = await Promise.all(
     sources.map(async (src) => {
       const dir =
-        src === "claude" ? "Core/Sessions/Claude" : "Core/Sessions/OpenClaw";
+        src === "claude-code" ? "Core/Sessions/Claude" : "Core/Sessions/OpenClaw";
       const files = await listMarkdown(dir);
       return files
         .filter((f) => !f.relativePath.endsWith("/_README.md"))

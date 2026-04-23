@@ -5,22 +5,22 @@ import { buildObsidianUri, readMarkdown } from "@/lib";
 import type { SessionFrontmatter, SessionSource } from "@/lib/types";
 
 const SOURCE_DIR: Record<SessionSource, string> = {
-  claude: "Core/Sessions/Claude",
+  "claude-code": "Core/Sessions/Claude",
   openclaw: "Core/Sessions/OpenClaw",
 };
 
 const SOURCE_LABEL: Record<SessionSource, string> = {
-  claude: "Claude",
+  "claude-code": "Claude Code",
   openclaw: "Travis",
 };
 
 const SOURCE_STYLE: Record<SessionSource, string> = {
-  claude: "bg-emerald-400/15 text-emerald-300",
+  "claude-code": "bg-emerald-400/15 text-emerald-300",
   openclaw: "bg-accent/15 text-accent",
 };
 
 function isSource(value: string): value is SessionSource {
-  return value === "claude" || value === "openclaw";
+  return value === "claude-code" || value === "openclaw";
 }
 
 function isSafeFilename(value: string): boolean {
