@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 import { addTask } from "@/lib/writers/tasks";
 import type { TaskAgent } from "@/lib/types";
 
-const VALID_AGENTS: ReadonlySet<TaskAgent> = new Set(["travis", "claude", "brad"]);
+const VALID_AGENTS: ReadonlySet<TaskAgent> = new Set([
+  "travis",
+  "claude-code",
+  "claude-cowork",
+  "brad",
+]);
 
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => null)) as

@@ -8,7 +8,8 @@ type Props = {
 
 const AGENT_STYLE: Record<string, string> = {
   travis: "bg-accent/15 text-accent",
-  claude: "bg-emerald-400/15 text-emerald-300",
+  "claude-code": "bg-emerald-400/15 text-emerald-300",
+  "claude-cowork": "bg-sky-400/15 text-sky-300",
   brad: "bg-surface-2 text-foreground",
 };
 

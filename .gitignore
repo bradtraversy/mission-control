@@ -43,6 +43,6 @@ next-env.d.ts
 
 .vscode/
 
-# playwright MCP screenshots
+# playwright MCP screenshots (root-level only — keeps public/*.png committable)
 .playwright-mcp/
-/agents-tab.png
+/*.png

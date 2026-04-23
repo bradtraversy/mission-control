@@ -12,7 +12,13 @@ type Props = {
 };
 
 const STATUSES: TaskStatus[] = ["queued", "claimed", "done"];
-const AGENT_FILTERS: (TaskAgent | "all")[] = ["all", "travis", "claude", "brad"];
+const AGENT_FILTERS: (TaskAgent | "all")[] = [
+  "all",
+  "travis",
+  "claude-code",
+  "claude-cowork",
+  "brad",
+];
 
 const STATUS_LABELS: Record<TaskStatus, string> = {
   queued: "Queued",
@@ -28,14 +34,16 @@ const STATUS_HINTS: Record<TaskStatus, string> = {
 
 const AGENT_STYLE: Record<TaskAgent, string> = {
   travis: "bg-accent/15 text-accent",
-  claude: "bg-emerald-400/15 text-emerald-300",
+  "claude-code": "bg-emerald-400/15 text-emerald-300",
+  "claude-cowork": "bg-sky-400/15 text-sky-300",
   brad: "bg-surface-2 text-foreground",
 };
 
 const AGENT_LABEL: Record<TaskAgent | "all", string> = {
   all: "All",
   travis: "Travis",
-  claude: "Claude",
+  "claude-code": "Claude Code",
+  "claude-cowork": "Claude Cowork",
   brad: "Brad",
 };
 
@@ -155,7 +163,8 @@ export function TasksBoard({ tasks, taskUris }: Props) {
               className="text-[12px] bg-surface-2/60 border border-border rounded px-1.5 py-1 text-foreground focus:outline-none focus:border-accent/60"
             >
               <option value="travis">Travis</option>
-              <option value="claude">Claude</option>
+              <option value="claude-code">Claude Code</option>
+              <option value="claude-cowork">Claude Cowork</option>
               <option value="brad">Brad</option>
             </select>
             <button
