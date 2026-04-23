@@ -1,6 +1,11 @@
-import { Command, Pause, RotateCw, Search, Zap } from "lucide-react";
+import { Command, RotateCw, Search } from "lucide-react";
+import { getTaskControl } from "@/lib/parsers/tasks";
+import { PauseToggle } from "./PauseToggle";
+import { PingTravisButton } from "./PingTravisButton";
 
-export function TopBar() {
+export async function TopBar() {
+  const control = await getTaskControl();
+
   return (
     <div className="h-full flex items-center justify-between px-4 border-b border-border">
       <div className="flex items-center gap-2">
@@ -18,21 +23,8 @@ export function TopBar() {
           <kbd className="ml-8 text-[10px] text-muted/70">⌘K</kbd>
         </button>
 
-        <button
-          type="button"
-          className="flex items-center gap-1.5 h-8 px-2.5 rounded-md text-xs text-muted hover:text-foreground hover:bg-surface transition-colors"
-        >
-          <Pause size={13} strokeWidth={1.75} />
-          Pause
-        </button>
-
-        <button
-          type="button"
-          className="flex items-center gap-1.5 h-8 px-2.5 rounded-md text-xs text-muted hover:text-foreground hover:bg-surface transition-colors"
-        >
-          <Zap size={13} strokeWidth={1.75} />
-          Ping Travis
-        </button>
+        <PauseToggle paused={control.paused} />
+        <PingTravisButton />
 
         <button
           type="button"

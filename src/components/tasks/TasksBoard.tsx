@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { formatRelativeTime } from "@/lib/format";
 import type { Task, TaskAgent, TaskStatus } from "@/lib/types";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
@@ -40,6 +41,51 @@ const AGENT_LABEL: Record<TaskAgent | "all", string> = {
 
 export function TasksBoard({ tasks, taskUris }: Props) {
   const [agentFilter, setAgentFilter] = useState<TaskAgent | "all">("all");
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const [adding, setAdding] = useState(false);
+  const [draftTitle, setDraftTitle] = useState("");
+  const [draftAgent, setDraftAgent] = useState<TaskAgent>("travis");
+
+  const submitNew = () => {
+    if (!draftTitle.trim()) return;
+    startTransition(async () => {
+      const res = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ title: draftTitle, agent: draftAgent }),
+      });
+      if (!res.ok) {
+        const { error } = (await res.json().catch(() => ({ error: "write failed" }))) as {
+          error?: string;
+        };
+        alert(`Failed to add task: ${error ?? "unknown error"}`);
+        return;
+      }
+      setDraftTitle("");
+      setAdding(false);
+      router.refresh();
+    });
+  };
+
+  const setStatus = (task: Task, status: TaskStatus) => {
+    startTransition(async () => {
+      const res = await fetch(`/api/tasks/${encodeURIComponent(task.filename)}`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) {
+        const { error } = (await res.json().catch(() => ({ error: "write failed" }))) as {
+          error?: string;
+        };
+        alert(`Failed to update ${task.filename}: ${error ?? "unknown error"}`);
+        return;
+      }
+      router.refresh();
+    });
+  };
 
   const filtered = useMemo(
     () =>
@@ -72,7 +118,60 @@ export function TasksBoard({ tasks, taskUris }: Props) {
             onClick={() => setAgentFilter(key)}
           />
         ))}
+        <button
+          type="button"
+          onClick={() => setAdding((v) => !v)}
+          className="ml-auto text-[11px] px-2 py-1 rounded border border-border bg-surface-2/60 text-muted hover:text-foreground"
+        >
+          {adding ? "Cancel" : "+ New Task"}
+        </button>
       </div>
+      {adding && (
+        <div className="rounded-md border border-border bg-surface/60 p-3 space-y-2">
+          <input
+            autoFocus
+            type="text"
+            value={draftTitle}
+            onChange={(e) => setDraftTitle(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                submitNew();
+              } else if (e.key === "Escape") {
+                setDraftTitle("");
+                setAdding(false);
+              }
+            }}
+            disabled={isPending}
+            placeholder="Task title"
+            className="w-full text-sm bg-surface-2/60 border border-border rounded px-2 py-1.5 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-accent/60"
+          />
+          <div className="flex items-center gap-2">
+            <label className="text-[11px] text-muted">Assign to</label>
+            <select
+              value={draftAgent}
+              onChange={(e) => setDraftAgent(e.target.value as TaskAgent)}
+              disabled={isPending}
+              className="text-[12px] bg-surface-2/60 border border-border rounded px-1.5 py-1 text-foreground focus:outline-none focus:border-accent/60"
+            >
+              <option value="travis">Travis</option>
+              <option value="claude">Claude</option>
+              <option value="brad">Brad</option>
+            </select>
+            <button
+              type="button"
+              onClick={submitNew}
+              disabled={isPending || !draftTitle.trim()}
+              className="ml-auto text-[11px] px-2.5 py-1 rounded bg-accent/20 border border-accent/40 text-foreground hover:bg-accent/30 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Create
+            </button>
+          </div>
+          <p className="text-[10px] text-muted/50">
+            Creates a queued task assigned to the chosen agent · Enter to create · Esc to cancel
+          </p>
+        </div>
+      )}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {STATUSES.map((status) => (
           <Column
@@ -80,11 +179,22 @@ export function TasksBoard({ tasks, taskUris }: Props) {
             status={status}
             tasks={byStatus[status]}
             taskUris={taskUris}
+            onSetStatus={setStatus}
+            disabled={isPending}
           />
         ))}
       </div>
     </div>
   );
+}
+
+function prevStatus(s: TaskStatus): TaskStatus | null {
+  const i = STATUSES.indexOf(s);
+  return i > 0 ? STATUSES[i - 1] : null;
+}
+function nextStatus(s: TaskStatus): TaskStatus | null {
+  const i = STATUSES.indexOf(s);
+  return i < STATUSES.length - 1 ? STATUSES[i + 1] : null;
 }
 
 function Chip({
@@ -115,10 +225,14 @@ function Column({
   status,
   tasks,
   taskUris,
+  onSetStatus,
+  disabled,
 }: {
   status: TaskStatus;
   tasks: Task[];
   taskUris: Record<string, string>;
+  onSetStatus: (task: Task, status: TaskStatus) => void;
+  disabled: boolean;
 }) {
   return (
     <Card>
@@ -137,17 +251,53 @@ function Column({
           </p>
         )}
         {tasks.map((t) => (
-          <TaskCard key={t.relativePath} task={t} uri={taskUris[t.relativePath]} />
+          <TaskCard
+            key={t.relativePath}
+            task={t}
+            uri={taskUris[t.relativePath]}
+            onSetStatus={onSetStatus}
+            disabled={disabled}
+          />
         ))}
       </CardBody>
     </Card>
   );
 }
 
-function TaskCard({ task, uri }: { task: Task; uri: string | undefined }) {
+function TaskCard({
+  task,
+  uri,
+  onSetStatus,
+  disabled,
+}: {
+  task: Task;
+  uri: string | undefined;
+  onSetStatus: (task: Task, status: TaskStatus) => void;
+  disabled: boolean;
+}) {
+  const prev = prevStatus(task.status);
+  const next = nextStatus(task.status);
   return (
-    <div className="rounded-md border border-border bg-surface-2/40 p-2.5 space-y-1.5">
-      <div className="text-sm text-foreground leading-snug">{task.title}</div>
+    <div className="group rounded-md border border-border bg-surface-2/40 p-2.5 space-y-1.5">
+      <div className="flex items-start gap-2">
+        <div className="text-sm text-foreground leading-snug flex-1 min-w-0">
+          {task.title}
+        </div>
+        <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+          <StatusButton
+            direction="left"
+            target={prev}
+            disabled={disabled || !prev}
+            onClick={() => prev && onSetStatus(task, prev)}
+          />
+          <StatusButton
+            direction="right"
+            target={next}
+            disabled={disabled || !next}
+            onClick={() => next && onSetStatus(task, next)}
+          />
+        </div>
+      </div>
       <div className="flex items-center gap-2 flex-wrap">
         <span
           className={`text-[10px] px-1.5 py-0.5 rounded ${AGENT_STYLE[task.agent]}`}
@@ -170,5 +320,30 @@ function TaskCard({ task, uri }: { task: Task; uri: string | undefined }) {
         )}
       </div>
     </div>
+  );
+}
+
+function StatusButton({
+  direction,
+  target,
+  disabled,
+  onClick,
+}: {
+  direction: "left" | "right";
+  target: TaskStatus | null;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      title={target ? `Move to ${target}` : ""}
+      aria-label={target ? `Move to ${target}` : "no move available"}
+      className="text-muted/60 hover:text-foreground disabled:text-muted/20 disabled:cursor-not-allowed px-1 text-xs leading-none"
+    >
+      {direction === "left" ? "←" : "→"}
+    </button>
   );
 }
