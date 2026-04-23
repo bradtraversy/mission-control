@@ -97,6 +97,34 @@ export type Digest = ParsedMarkdown<DigestFrontmatter> & {
   date: string | null;
 };
 
+// Calendar
+export type CalendarEventFlag = "all-day" | "recurring" | "informational";
+export type CalendarGroup = "this-week" | "next-week" | "later";
+
+export type CalendarEvent = {
+  dayLabel: string;
+  timeRange: string | null;
+  title: string;
+  flags: CalendarEventFlag[];
+  project: {
+    target: string;
+    display: string;
+  } | null;
+  tags: string[];
+  group: CalendarGroup;
+  raw: string;
+};
+
+export type CalendarSnapshot = {
+  lastRefreshed: string | null;
+  source: string | null;
+  thisWeek: CalendarEvent[];
+  nextWeek: CalendarEvent[];
+  later: CalendarEvent[];
+  total: number;
+  exists: boolean;
+};
+
 // Memory
 export type MemoryEntry = ParsedMarkdown;
 
