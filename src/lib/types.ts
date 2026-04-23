@@ -58,6 +58,11 @@ export type Project = {
   name: string;
   body: string;
   raw: string;
+  status: string | null;
+  statusTone: "active" | "planning" | "shelved" | "unknown";
+  type: string | null;
+  nextAction: string | null;
+  repoUrl: string | null;
 };
 
 // Sessions
