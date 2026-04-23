@@ -1,7 +1,8 @@
-import { Command, RotateCw, Search } from "lucide-react";
+import { Command, Search } from "lucide-react";
 import { getTaskControl } from "@/lib/parsers/tasks";
 import { PauseToggle } from "./PauseToggle";
 import { PingTravisButton } from "./PingTravisButton";
+import { RefreshButton } from "./RefreshButton";
 
 export async function TopBar() {
   const control = await getTaskControl();
@@ -26,13 +27,7 @@ export async function TopBar() {
         <PauseToggle paused={control.paused} />
         <PingTravisButton />
 
-        <button
-          type="button"
-          aria-label="Refresh"
-          className="h-8 w-8 flex items-center justify-center rounded-md text-muted hover:text-foreground hover:bg-surface transition-colors"
-        >
-          <RotateCw size={13} strokeWidth={1.75} />
-        </button>
+        <RefreshButton />
       </div>
     </div>
   );
