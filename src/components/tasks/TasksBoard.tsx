@@ -304,8 +304,10 @@ function TaskCard({
         >
           {task.agent}
         </span>
-        {task.refTodoId !== null && (
-          <span className="text-[10px] text-muted/70">ref #{task.refTodoId}</span>
+        {task.refTodo && (
+          <span className="text-[10px] text-muted/70">
+            ref {task.refTodo.column[0].toUpperCase() + task.refTodo.column.slice(1)}#{task.refTodo.id}
+          </span>
         )}
         <span className="text-[10px] text-muted ml-auto">
           {formatRelativeTime(task.created)}
