@@ -19,6 +19,7 @@ export {
   type NetworkVolume,
 } from "./parsers/network";
 export { getCurrentState } from "./parsers/currentState";
+export { getAgents } from "./parsers/agents";
 export { getSponsors, type SponsorDeadline } from "./parsers/sponsors";
 export {
   getServiceHealth,

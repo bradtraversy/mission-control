@@ -136,6 +136,32 @@ export type NetworkFeed = {
   data: unknown;
 };
 
+// Agents
+export type AgentField = {
+  label: string;
+  value: string;
+  isPlaceholder: boolean;
+};
+
+export type AgentEntry = {
+  name: string;
+  slug: string;
+  fields: AgentField[];
+  body: string;
+  hasPlaceholder: boolean;
+};
+
+export type AgentsSnapshot = {
+  mission: {
+    body: string;
+    hasPlaceholder: boolean;
+  };
+  roster: AgentEntry[];
+  routing: string | null;
+  exists: boolean;
+  relativePath: string;
+};
+
 // Current State
 export type CurrentStateSnapshot = {
   thisWeek: string[];
