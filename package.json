@@ -10,6 +10,7 @@
     "probe:vault": "tsx scripts/probe-vault.ts"
   },
   "dependencies": {
+    "chokidar": "^5.0.0",
     "gray-matter": "^4.0.3",
     "lucide-react": "^1.8.0",
     "next": "16.2.4",
