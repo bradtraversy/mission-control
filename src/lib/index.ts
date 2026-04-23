@@ -8,6 +8,15 @@ export { getSessions } from "./parsers/sessions";
 export { getDigests } from "./parsers/digests";
 export { getMemory } from "./parsers/memory";
 export { getNetworkFeeds } from "./parsers/networkFeeds";
+export {
+  getNetworkSnapshot,
+  type NetworkSnapshot,
+  type NetworkMachine,
+  type NetworkAutomation,
+  type NetworkCronJob,
+  type NetworkConnectivity,
+  type NetworkVolume,
+} from "./parsers/network";
 export { getCurrentState } from "./parsers/currentState";
 export { getSponsors, type SponsorDeadline } from "./parsers/sponsors";
 export {
