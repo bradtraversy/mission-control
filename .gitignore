@@ -42,3 +42,7 @@ yarn-error.log*
 next-env.d.ts
 
 .vscode/
+
+# playwright MCP screenshots
+.playwright-mcp/
+/agents-tab.png
