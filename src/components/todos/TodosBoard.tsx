@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import type { TodoColumn, TodoItem, TodosSnapshot } from "@/lib";
+import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import type { TodoColumn, TodoItem, TodosSnapshot } from "@/lib/types";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 
 type Props = {
@@ -23,6 +24,26 @@ const COLUMN_HINTS: Record<TodoColumn, string> = {
 
 export function TodosBoard({ snapshot, columnUris }: Props) {
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const toggleDone = (todo: TodoItem) => {
+    startTransition(async () => {
+      const res = await fetch(`/api/todos/${todo.column}/${todo.id}`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ done: !todo.done }),
+      });
+      if (!res.ok) {
+        const { error } = (await res.json().catch(() => ({ error: "write failed" }))) as {
+          error?: string;
+        };
+        alert(`Failed to update #${todo.id}: ${error ?? "unknown error"}`);
+        return;
+      }
+      router.refresh();
+    });
+  };
 
   const allTags = useMemo(() => {
     const counts = new Map<string, number>();
@@ -55,6 +76,8 @@ export function TodosBoard({ snapshot, columnUris }: Props) {
             column={col}
             items={filter(snapshot[col])}
             editUri={columnUris[col]}
+            onToggle={toggleDone}
+            disabled={isPending}
           />
         ))}
       </div>
@@ -114,10 +137,14 @@ function Column({
   column,
   items,
   editUri,
+  onToggle,
+  disabled,
 }: {
   column: TodoColumn;
   items: TodoItem[];
   editUri: string;
+  onToggle: (todo: TodoItem) => void;
+  disabled: boolean;
 }) {
   const open = items.filter((t) => !t.done);
   const done = items.filter((t) => t.done);
@@ -143,7 +170,12 @@ function Column({
           </p>
         )}
         {open.map((t) => (
-          <TodoRow key={`${t.column}-${t.id}`} todo={t} />
+          <TodoRow
+            key={`${t.column}-${t.id}`}
+            todo={t}
+            onToggle={onToggle}
+            disabled={disabled}
+          />
         ))}
         {done.length > 0 && (
           <>
@@ -151,7 +183,12 @@ function Column({
               Done
             </div>
             {done.map((t) => (
-              <TodoRow key={`${t.column}-${t.id}`} todo={t} />
+              <TodoRow
+                key={`${t.column}-${t.id}`}
+                todo={t}
+                onToggle={onToggle}
+                disabled={disabled}
+              />
             ))}
           </>
         )}
@@ -160,14 +197,26 @@ function Column({
   );
 }
 
-function TodoRow({ todo }: { todo: TodoItem }) {
+function TodoRow({
+  todo,
+  onToggle,
+  disabled,
+}: {
+  todo: TodoItem;
+  onToggle: (todo: TodoItem) => void;
+  disabled: boolean;
+}) {
   return (
     <div className="flex items-start gap-2 py-1">
-      <span
-        className={`mt-0.5 inline-block w-3.5 h-3.5 rounded-[3px] border shrink-0 ${
+      <button
+        type="button"
+        onClick={() => onToggle(todo)}
+        disabled={disabled}
+        aria-label={todo.done ? `Mark #${todo.id} open` : `Mark #${todo.id} done`}
+        className={`mt-0.5 inline-block w-3.5 h-3.5 rounded-[3px] border shrink-0 transition-colors cursor-pointer disabled:cursor-wait ${
           todo.done
-            ? "bg-emerald-400/25 border-emerald-400/50"
-            : "border-border"
+            ? "bg-emerald-400/25 border-emerald-400/50 hover:bg-emerald-400/35"
+            : "border-border hover:border-foreground/40"
         }`}
       />
       <span className="text-[11px] text-muted/60 font-mono tabular-nums shrink-0 mt-0.5">
