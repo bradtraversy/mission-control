@@ -2,11 +2,17 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
 import { resolveVaultRelativePath, toRelativePath } from "../vault";
-import type { Task, TaskAgent, TaskControl, TaskStatus } from "../types";
+import type {
+  Task,
+  TaskAgent,
+  TaskControl,
+  TaskStatus,
+  TodoColumn,
+} from "../types";
 
 const STATUSES: ReadonlySet<TaskStatus> = new Set(["queued", "claimed", "done"]);
 const AGENTS: ReadonlySet<TaskAgent> = new Set(["travis", "claude", "brad"]);
-const REF_RE = /(?:^|\s)Ref:\s*#(\d+)/m;
+const REF_RE = /(?:^|\s)Ref:\s*(Now|Soon|Later)#(\d+)/im;
 
 function firstHeading(body: string): string | null {
   const match = body.match(/^#\s+(.+?)\s*$/m);
@@ -53,7 +59,12 @@ async function parseTaskFile(
       status: coerceStatus(fm.status),
       agent: coerceAgent(fm.agent),
       body: parsed.content,
-      refTodoId: refMatch ? Number.parseInt(refMatch[1], 10) : null,
+      refTodo: refMatch
+        ? {
+            column: refMatch[1].toLowerCase() as TodoColumn,
+            id: Number.parseInt(refMatch[2], 10),
+          }
+        : null,
       archived,
     };
   } catch (err) {

@@ -43,7 +43,7 @@ async function main(): Promise<void> {
   console.log(`active tasks: ${tasks.length}`);
   for (const t of tasks.slice(0, 5)) {
     console.log(
-      `  ${t.status.padEnd(7)} ${t.agent.padEnd(7)} ref=${t.refTodoId ?? "-"} · ${t.title}`,
+      `  ${t.status.padEnd(7)} ${t.agent.padEnd(7)} ref=${t.refTodo ? `${t.refTodo.column}#${t.refTodo.id}` : "-"} · ${t.title}`,
     );
   }
   const control = await getTaskControl();

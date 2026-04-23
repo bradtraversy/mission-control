@@ -62,9 +62,9 @@ export function TasksPanel({ tasks }: Props) {
                 >
                   {t.agent}
                 </span>
-                {t.refTodoId !== null && (
+                {t.refTodo && (
                   <span className="text-[10px] text-muted/70">
-                    ref #{t.refTodoId}
+                    ref {t.refTodo.column[0].toUpperCase() + t.refTodo.column.slice(1)}#{t.refTodo.id}
                   </span>
                 )}
                 <span className="text-[10px] text-muted ml-auto">

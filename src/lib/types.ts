@@ -41,7 +41,7 @@ export type Task = {
   status: TaskStatus;
   agent: TaskAgent;
   body: string;
-  refTodoId: number | null;
+  refTodo: { column: TodoColumn; id: number } | null;
   archived: boolean;
 };
 
