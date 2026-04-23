@@ -61,6 +61,45 @@ export async function setTodoDone(
   await writeFileAtomic(file, updated.join("\n"));
 }
 
+export async function addTodo(
+  column: TodoColumn,
+  input: string,
+): Promise<{ id: number; column: TodoColumn }> {
+  const trimmed = input.trim();
+  if (!trimmed) throw new Error("input required");
+
+  const id = await nextGlobalId();
+  const line = `- [ ] \`#${id}\` ${trimmed}`;
+
+  const file = FILE_MAP[column];
+  const raw = await readFile(file);
+  const updated = bumpNextId(insertAboveDone(raw, line), id + 1);
+
+  await writeFileAtomic(file, updated);
+  return { id, column };
+}
+
+async function nextGlobalId(): Promise<number> {
+  const files = await Promise.all(
+    (["now", "soon", "later"] as TodoColumn[]).map((c) => readFile(FILE_MAP[c])),
+  );
+  let max = 0;
+  const idRe = /^- \[[ x]\] `#(\d+)` /gm;
+  for (const raw of files) {
+    for (const match of raw.matchAll(idRe)) {
+      const n = Number.parseInt(match[1], 10);
+      if (n > max) max = n;
+    }
+  }
+  return max + 1;
+}
+
+function bumpNextId(raw: string, value: number): string {
+  const re = /^next_id:\s*\d+\s*$/m;
+  if (!re.test(raw)) return raw;
+  return raw.replace(re, `next_id: ${value}`);
+}
+
 export async function moveTodo(
   fromColumn: TodoColumn,
   id: number,

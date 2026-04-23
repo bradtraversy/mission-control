@@ -51,6 +51,28 @@ export function TodosBoard({ snapshot, columnUris }: Props) {
   const moveTodoTo = (todo: TodoItem, to: TodoColumn) =>
     patchTodo(todo, { column: to }, `move to ${to}`);
 
+  const addNew = (column: TodoColumn, input: string) => {
+    return new Promise<boolean>((resolve) => {
+      startTransition(async () => {
+        const res = await fetch(`/api/todos`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ column, input }),
+        });
+        if (!res.ok) {
+          const { error } = (await res.json().catch(() => ({ error: "write failed" }))) as {
+            error?: string;
+          };
+          alert(`Failed to add todo: ${error ?? "unknown error"}`);
+          resolve(false);
+          return;
+        }
+        router.refresh();
+        resolve(true);
+      });
+    });
+  };
+
   const allTags = useMemo(() => {
     const counts = new Map<string, number>();
     for (const col of ["now", "soon", "later"] as TodoColumn[]) {
@@ -84,6 +106,7 @@ export function TodosBoard({ snapshot, columnUris }: Props) {
             editUri={columnUris[col]}
             onToggle={toggleDone}
             onMove={moveTodoTo}
+            onAdd={addNew}
             disabled={isPending}
           />
         ))}
@@ -156,6 +179,7 @@ function Column({
   editUri,
   onToggle,
   onMove,
+  onAdd,
   disabled,
 }: {
   column: TodoColumn;
@@ -163,10 +187,22 @@ function Column({
   editUri: string;
   onToggle: (todo: TodoItem) => void;
   onMove: (todo: TodoItem, to: TodoColumn) => void;
+  onAdd: (column: TodoColumn, input: string) => Promise<boolean>;
   disabled: boolean;
 }) {
   const open = items.filter((t) => !t.done);
   const done = items.filter((t) => t.done);
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState("");
+
+  const submit = async () => {
+    if (!draft.trim()) return;
+    const ok = await onAdd(column, draft);
+    if (ok) {
+      setDraft("");
+      setAdding(false);
+    }
+  };
 
   return (
     <Card>
@@ -174,14 +210,48 @@ function Column({
         title={`${COLUMN_LABELS[column]} · ${COLUMN_HINTS[column]}`}
         meta={`${open.length} open · ${done.length} done`}
         action={
-          <a
-            href={editUri}
-            className="text-[11px] text-muted hover:text-foreground"
-          >
-            Edit ↗
-          </a>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setAdding((v) => !v)}
+              className="text-[11px] text-muted hover:text-foreground"
+            >
+              {adding ? "Cancel" : "+ Add"}
+            </button>
+            <a
+              href={editUri}
+              className="text-[11px] text-muted hover:text-foreground"
+            >
+              Edit ↗
+            </a>
+          </div>
         }
       />
+      {adding && (
+        <div className="px-4 pb-3">
+          <input
+            autoFocus
+            type="text"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                submit();
+              } else if (e.key === "Escape") {
+                setDraft("");
+                setAdding(false);
+              }
+            }}
+            disabled={disabled}
+            placeholder="Type your todo, include #tags inline"
+            className="w-full text-sm bg-surface-2/60 border border-border rounded px-2 py-1.5 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-accent/60"
+          />
+          <p className="text-[10px] text-muted/50 mt-1">
+            Enter to add · Esc to cancel · IDs assign automatically
+          </p>
+        </div>
+      )}
       <CardBody className="space-y-0.5">
         {open.length === 0 && done.length === 0 && (
           <p className="text-[11px] text-muted/60 italic py-1">
