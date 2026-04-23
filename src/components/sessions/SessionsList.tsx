@@ -8,16 +8,20 @@ type Props = {
   sessions: Session[];
 };
 
-const SOURCE_FILTERS: ("all" | SessionSource)[] = ["all", "claude", "openclaw"];
+const SOURCE_FILTERS: ("all" | SessionSource)[] = [
+  "all",
+  "claude-code",
+  "openclaw",
+];
 
 const SOURCE_LABEL: Record<"all" | SessionSource, string> = {
   all: "All",
-  claude: "Claude",
+  "claude-code": "Claude Code",
   openclaw: "Travis",
 };
 
 const SOURCE_STYLE: Record<SessionSource, string> = {
-  claude: "bg-emerald-400/15 text-emerald-300",
+  "claude-code": "bg-emerald-400/15 text-emerald-300",
   openclaw: "bg-accent/15 text-accent",
 };
 
