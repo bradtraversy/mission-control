@@ -50,6 +50,8 @@ export default async function Page({
   const { frontmatter, body } = doc;
   const projects = frontmatter.projects ?? [];
   const topics = frontmatter.topics ?? [];
+  const dateMatch = filename.match(/^(\d{4}-\d{2}-\d{2})/);
+  const date = dateMatch?.[1] ?? null;
   const obsidianUri = buildObsidianUri(relativePath);
 
   return (
@@ -68,9 +70,9 @@ export default async function Page({
           >
             {SOURCE_LABEL[source]}
           </span>
-          {frontmatter.date && (
+          {date && (
             <span className="text-[11px] text-muted font-mono">
-              {frontmatter.date}
+              {date}
               {frontmatter.time ? ` · ${frontmatter.time}` : ""}
             </span>
           )}

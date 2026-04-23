@@ -76,6 +76,8 @@ export type SessionSource = "claude" | "openclaw";
 export type Session = ParsedMarkdown<SessionFrontmatter> & {
   source: SessionSource;
   slug: string;
+  title: string;
+  date: string | null;
 };
 
 // Digests

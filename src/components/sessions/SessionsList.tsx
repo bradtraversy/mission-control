@@ -26,10 +26,6 @@ function filenameFromPath(relativePath: string): string {
   return last.replace(/\.md$/, "");
 }
 
-function titleFromSlug(slug: string): string {
-  return slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
 export function SessionsList({ sessions }: Props) {
   const [filter, setFilter] = useState<"all" | SessionSource>("all");
 
@@ -77,10 +73,10 @@ export function SessionsList({ sessions }: Props) {
                       {SOURCE_LABEL[s.source]}
                     </span>
                     <span className="text-[11px] text-muted font-mono shrink-0">
-                      {s.frontmatter.date ?? "—"}
+                      {s.date ?? "—"}
                     </span>
                     <span className="text-sm text-foreground truncate">
-                      {titleFromSlug(s.slug)}
+                      {s.title}
                     </span>
                     {projects.length > 0 && (
                       <span className="flex items-center gap-1 ml-auto shrink-0">

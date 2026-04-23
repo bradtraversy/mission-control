@@ -38,10 +38,10 @@ export function RecentSessionsPanel({ sessions }: Props) {
                 {s.source}
               </span>
               <span className="text-[11px] text-muted font-mono shrink-0">
-                {s.frontmatter.date ?? "?"}
+                {s.date ?? "?"}
               </span>
               <span className="text-sm text-foreground truncate flex-1">
-                {s.slug}
+                {s.title}
               </span>
             </div>
             {s.frontmatter.outcome && (
