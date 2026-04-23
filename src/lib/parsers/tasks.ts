@@ -11,7 +11,12 @@ import type {
 } from "../types";
 
 const STATUSES: ReadonlySet<TaskStatus> = new Set(["queued", "claimed", "done"]);
-const AGENTS: ReadonlySet<TaskAgent> = new Set(["travis", "claude", "brad"]);
+const AGENTS: ReadonlySet<TaskAgent> = new Set([
+  "travis",
+  "claude-code",
+  "claude-cowork",
+  "brad",
+]);
 const REF_RE = /(?:^|\s)Ref:\s*(Now|Soon|Later)#(\d+)/im;
 
 function firstHeading(body: string): string | null {
