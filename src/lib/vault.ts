@@ -45,6 +45,11 @@ export function toRelativePath(absolute: string): string {
     .join("/");
 }
 
+export function buildObsidianUri(relativePath: string): string {
+  const vault = path.basename(resolveVaultPath());
+  return `obsidian://open?vault=${encodeURIComponent(vault)}&file=${encodeURIComponent(relativePath)}`;
+}
+
 export function isExcluded(absoluteOrRelative: string): boolean {
   const root = resolveVaultPath();
   const rel = absoluteOrRelative.startsWith(root)

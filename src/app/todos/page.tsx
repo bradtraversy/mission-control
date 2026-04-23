@@ -1,10 +1,29 @@
-import { TabStub } from "@/components/layout/TabStub";
+import { TodosBoard } from "@/components/todos/TodosBoard";
+import { buildObsidianUri, getTodos } from "@/lib";
 
-export default function Page() {
+export default async function Page() {
+  const snapshot = await getTodos();
+  const columnUris = {
+    now: buildObsidianUri("Todos/Now.md"),
+    soon: buildObsidianUri("Todos/Soon.md"),
+    later: buildObsidianUri("Todos/Later.md"),
+  };
+
+  const openCount =
+    snapshot.now.filter((t) => !t.done).length +
+    snapshot.soon.filter((t) => !t.done).length +
+    snapshot.later.filter((t) => !t.done).length;
+
   return (
-    <TabStub
-      title="Todos"
-      description="Brad's curated long-term backlog. Three columns over Todos/Now|Soon|Later.md with #N IDs preserved. Check-off, move between columns, and add-new are the only writes MC performs here."
-    />
+    <div className="p-6 space-y-5">
+      <header className="space-y-1">
+        <h1 className="text-lg font-medium tracking-tight">Todos</h1>
+        <p className="text-[12px] text-muted">
+          Brad&apos;s curated long-term backlog · {openCount} open across three
+          columns · IDs preserved from the vault
+        </p>
+      </header>
+      <TodosBoard snapshot={snapshot} columnUris={columnUris} />
+    </div>
   );
 }
