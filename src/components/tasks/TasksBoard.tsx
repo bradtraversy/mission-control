@@ -56,14 +56,27 @@ export function TasksBoard({ tasks, taskUris }: Props) {
   const [adding, setAdding] = useState(false);
   const [draftTitle, setDraftTitle] = useState("");
   const [draftAgent, setDraftAgent] = useState<TaskAgent>("travis");
+  const [draftBody, setDraftBody] = useState("");
+
+  const resetDraft = () => {
+    setDraftTitle("");
+    setDraftBody("");
+    setAdding(false);
+  };
 
   const submitNew = () => {
     if (!draftTitle.trim()) return;
     startTransition(async () => {
+      const payload: { title: string; agent: TaskAgent; body?: string } = {
+        title: draftTitle,
+        agent: draftAgent,
+      };
+      const trimmedBody = draftBody.trim();
+      if (trimmedBody) payload.body = trimmedBody;
       const res = await fetch("/api/tasks", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ title: draftTitle, agent: draftAgent }),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
         const { error } = (await res.json().catch(() => ({ error: "write failed" }))) as {
@@ -72,8 +85,7 @@ export function TasksBoard({ tasks, taskUris }: Props) {
         alert(`Failed to add task: ${error ?? "unknown error"}`);
         return;
       }
-      setDraftTitle("");
-      setAdding(false);
+      resetDraft();
       router.refresh();
     });
   };
@@ -164,13 +176,28 @@ export function TasksBoard({ tasks, taskUris }: Props) {
                 e.preventDefault();
                 submitNew();
               } else if (e.key === "Escape") {
-                setDraftTitle("");
-                setAdding(false);
+                resetDraft();
               }
             }}
             disabled={isPending}
             placeholder="Task title"
             className="w-full text-sm bg-surface-2/60 border border-border rounded px-2 py-1.5 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-accent/60"
+          />
+          <textarea
+            value={draftBody}
+            onChange={(e) => setDraftBody(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                submitNew();
+              } else if (e.key === "Escape") {
+                resetDraft();
+              }
+            }}
+            disabled={isPending}
+            rows={4}
+            placeholder="Body (optional) — what should the agent do? Markdown ok."
+            className="w-full text-sm bg-surface-2/60 border border-border rounded px-2 py-1.5 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-accent/60 resize-y font-mono"
           />
           <div className="flex items-center gap-2">
             <label className="text-[11px] text-muted">Assign to</label>
@@ -195,7 +222,7 @@ export function TasksBoard({ tasks, taskUris }: Props) {
             </button>
           </div>
           <p className="text-[10px] text-muted/50">
-            Creates a queued task assigned to the chosen agent · Enter to create · Esc to cancel
+            Title + optional body assigned to the chosen agent · Enter (in title) or ⌘/Ctrl+Enter (in body) to create · Esc to cancel
           </p>
         </div>
       )}
