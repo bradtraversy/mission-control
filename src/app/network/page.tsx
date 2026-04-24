@@ -13,6 +13,22 @@ const LIGHT_STYLE: Record<NetworkAutomation["trafficLight"], string> = {
   unknown: "bg-surface-2 text-muted",
 };
 
+const OWNER_STYLE: Record<string, string> = {
+  claude: "bg-slate-400/15 text-slate-300",
+  cowork: "bg-indigo-400/15 text-indigo-300",
+  travis: "bg-accent/15 text-accent",
+  brad: "bg-emerald-400/15 text-emerald-300",
+  system: "bg-surface-2 text-muted",
+};
+
+const OWNER_TOOLTIP: Record<string, string> = {
+  claude: "Ask Claude Code directly. Edits vault skill files + re-registers.",
+  cowork: "Ask Cowork (desktop Claude) directly. Same scheduled-tasks MCP capabilities as Claude Code.",
+  travis: "Ask Travis in OpenClaw, or queue a Tasks/<date>-<slug>.md with agent: travis.",
+  brad: "Brad owns the source script/service — systemd timers, personal crons, account-level stuff.",
+  system: "Ubuntu/Debian default — don't touch unless something specific breaks.",
+};
+
 const STATUS_DOT: Record<"ok" | "warn" | "down", string> = {
   ok: "bg-emerald-400",
   warn: "bg-amber-400",
@@ -200,6 +216,7 @@ function AutomationsTable({ rows }: { rows: NetworkAutomation[] }) {
           <tr className="text-left text-[10px] uppercase tracking-wider text-muted/60 border-b border-border">
             <th className="py-2 pr-3 font-medium">Status</th>
             <th className="py-2 pr-3 font-medium">Name</th>
+            <th className="py-2 pr-3 font-medium">Owner</th>
             <th className="py-2 pr-3 font-medium">Host</th>
             <th className="py-2 pr-3 font-medium">Schedule</th>
             <th className="py-2 pr-3 font-medium">Last Run</th>
@@ -217,6 +234,18 @@ function AutomationsTable({ rows }: { rows: NetworkAutomation[] }) {
                 </span>
               </td>
               <td className="py-2 pr-3 text-foreground">{a.name}</td>
+              <td className="py-2 pr-3">
+                {a.owner ? (
+                  <span
+                    title={OWNER_TOOLTIP[a.owner] ?? ""}
+                    className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${OWNER_STYLE[a.owner] ?? "bg-surface-2 text-muted"}`}
+                  >
+                    {a.owner}
+                  </span>
+                ) : (
+                  <span className="text-[10px] text-muted/60">—</span>
+                )}
+              </td>
               <td className="py-2 pr-3 text-muted font-mono">
                 {a.host ?? "—"}
               </td>
