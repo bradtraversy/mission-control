@@ -95,6 +95,23 @@ export function TasksBoard({ tasks, taskUris }: Props) {
     });
   };
 
+  const deleteTask = (task: Task) => {
+    if (!confirm(`Delete "${task.title}"? This cannot be undone.`)) return;
+    startTransition(async () => {
+      const res = await fetch(`/api/tasks/${encodeURIComponent(task.filename)}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const { error } = (await res.json().catch(() => ({ error: "delete failed" }))) as {
+          error?: string;
+        };
+        alert(`Failed to delete ${task.filename}: ${error ?? "unknown error"}`);
+        return;
+      }
+      router.refresh();
+    });
+  };
+
   const filtered = useMemo(
     () =>
       agentFilter === "all"
@@ -189,6 +206,7 @@ export function TasksBoard({ tasks, taskUris }: Props) {
             tasks={byStatus[status]}
             taskUris={taskUris}
             onSetStatus={setStatus}
+            onDelete={deleteTask}
             disabled={isPending}
           />
         ))}
@@ -235,12 +253,14 @@ function Column({
   tasks,
   taskUris,
   onSetStatus,
+  onDelete,
   disabled,
 }: {
   status: TaskStatus;
   tasks: Task[];
   taskUris: Record<string, string>;
   onSetStatus: (task: Task, status: TaskStatus) => void;
+  onDelete: (task: Task) => void;
   disabled: boolean;
 }) {
   return (
@@ -265,6 +285,7 @@ function Column({
             task={t}
             uri={taskUris[t.relativePath]}
             onSetStatus={onSetStatus}
+            onDelete={onDelete}
             disabled={disabled}
           />
         ))}
@@ -277,11 +298,13 @@ function TaskCard({
   task,
   uri,
   onSetStatus,
+  onDelete,
   disabled,
 }: {
   task: Task;
   uri: string | undefined;
   onSetStatus: (task: Task, status: TaskStatus) => void;
+  onDelete: (task: Task) => void;
   disabled: boolean;
 }) {
   const prev = prevStatus(task.status);
@@ -305,6 +328,16 @@ function TaskCard({
             disabled={disabled || !next}
             onClick={() => next && onSetStatus(task, next)}
           />
+          <button
+            type="button"
+            onClick={() => onDelete(task)}
+            disabled={disabled}
+            title="Delete task"
+            aria-label="Delete task"
+            className="text-muted/60 hover:text-red-400 disabled:text-muted/20 disabled:cursor-not-allowed px-1 text-xs leading-none"
+          >
+            ✕
+          </button>
         </div>
       </div>
       <div className="flex items-center gap-2 flex-wrap">
