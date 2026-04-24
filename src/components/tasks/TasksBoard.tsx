@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { formatRelativeTime } from "@/lib/format";
 import type { Task, TaskAgent, TaskStatus } from "@/lib/types";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
+import { MarkdownBody } from "@/components/markdown/MarkdownBody";
 
 type Props = {
   tasks: Task[];
@@ -294,6 +295,10 @@ function Column({
   );
 }
 
+function stripFirstH1(body: string): string {
+  return body.replace(/^#\s+.+?\n+/, "").trimStart();
+}
+
 function TaskCard({
   task,
   uri,
@@ -307,15 +312,35 @@ function TaskCard({
   onDelete: (task: Task) => void;
   disabled: boolean;
 }) {
+  const [expanded, setExpanded] = useState(false);
   const prev = prevStatus(task.status);
   const next = nextStatus(task.status);
+  const bodyForDisplay = stripFirstH1(task.body);
+  const hasBody = bodyForDisplay.length > 0;
+
+  const stop = (e: React.MouseEvent) => e.stopPropagation();
+
   return (
     <div className="group rounded-md border border-border bg-surface-2/40 p-2.5 space-y-1.5">
-      <div className="flex items-start gap-2">
+      <div
+        className="flex items-start gap-2 cursor-pointer select-none"
+        onClick={() => setExpanded((v) => !v)}
+        role="button"
+        aria-expanded={expanded}
+      >
+        <span
+          className={`shrink-0 text-muted/60 text-[10px] leading-snug pt-0.5 transition-transform ${expanded ? "rotate-90" : ""}`}
+          aria-hidden="true"
+        >
+          ▸
+        </span>
         <div className="text-sm text-foreground leading-snug flex-1 min-w-0">
           {task.title}
         </div>
-        <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div
+          className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+          onClick={stop}
+        >
           <StatusButton
             direction="left"
             target={prev}
@@ -357,12 +382,24 @@ function TaskCard({
         {uri && (
           <a
             href={uri}
+            onClick={stop}
             className="text-[10px] text-muted hover:text-foreground"
           >
             Edit ↗
           </a>
         )}
       </div>
+      {expanded && (
+        <div className="border-t border-border/60 pt-2 mt-1">
+          {hasBody ? (
+            <MarkdownBody content={bodyForDisplay} />
+          ) : (
+            <p className="text-[12px] text-muted/60 italic">
+              (no body — task has just a title)
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
