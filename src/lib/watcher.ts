@@ -1,6 +1,6 @@
 import path from "node:path";
 import chokidar, { type FSWatcher } from "chokidar";
-import { isExcluded, resolveVaultPath } from "./vault";
+import { isExcluded, isRefreshIrrelevant, resolveVaultPath } from "./vault";
 
 export type VaultChange = {
   paths: string[];
@@ -52,9 +52,14 @@ function getState(): WatcherState {
     state.pending.add(rel);
     if (state.debounceTimer) return;
     state.debounceTimer = setTimeout(() => {
-      const paths = Array.from(state.pending);
+      const allPaths = Array.from(state.pending);
       state.pending.clear();
       state.debounceTimer = null;
+      // Drop high-frequency status feeds (heartbeats / health JSONs) — they
+      // get rewritten by cron jobs every minute and would otherwise drive
+      // a constant router.refresh() loop in the browser.
+      const paths = allPaths.filter((p) => !isRefreshIrrelevant(p));
+      if (paths.length === 0) return;
       const change: VaultChange = { paths, at: Date.now() };
       for (const listener of state.listeners) {
         try {

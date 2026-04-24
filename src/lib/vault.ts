@@ -17,6 +17,15 @@ const EXCLUDED_FILES = new Set([
 
 const EXCLUDED_RELATIVE_FILES = new Set(["Core/Context/AI Rules.md"]);
 
+// Path prefixes whose changes should NOT push a UI refresh to the browser.
+// These are high-frequency status feeds rewritten by cron jobs every minute
+// (heartbeats, network/disk/service health, connectivity state). MC still
+// reads them on demand via dynamic SSR — they just shouldn't trigger
+// router.refresh() on every cron tick. Result: the Network tab shows
+// up-to-the-last-navigation freshness rather than live; everything else
+// keeps live updates.
+const REFRESH_IRRELEVANT_PREFIXES = ["Network/data/", "state/"];
+
 let cachedVaultPath: string | null = null;
 
 export function resolveVaultPath(): string {
@@ -61,6 +70,11 @@ export function isExcluded(absoluteOrRelative: string): boolean {
   if (EXCLUDED_FILES.has(basename)) return true;
   if (EXCLUDED_RELATIVE_FILES.has(rel)) return true;
   return false;
+}
+
+export function isRefreshIrrelevant(relative: string): boolean {
+  const rel = relative.split(path.sep).join("/");
+  return REFRESH_IRRELEVANT_PREFIXES.some((prefix) => rel.startsWith(prefix));
 }
 
 export async function readMarkdown<T = Frontmatter>(
