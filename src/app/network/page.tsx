@@ -15,7 +15,7 @@ const LIGHT_STYLE: Record<NetworkAutomation["trafficLight"], string> = {
 
 const OWNER_STYLE: Record<string, string> = {
   claude: "bg-slate-400/15 text-slate-300",
-  cowork: "bg-indigo-400/15 text-indigo-300",
+  cowork: "bg-orange-400/15 text-orange-300",
   travis: "bg-accent/15 text-accent",
   brad: "bg-emerald-400/15 text-emerald-300",
   system: "bg-surface-2 text-muted",
