@@ -37,6 +37,11 @@ export async function setTaskStatus(
   await writeFileAtomic(abs, updated);
 }
 
+export async function deleteTask(filename: string): Promise<void> {
+  const abs = resolveTaskFile(filename);
+  await fs.unlink(abs);
+}
+
 export async function addTask(opts: {
   title: string;
   agent: TaskAgent;

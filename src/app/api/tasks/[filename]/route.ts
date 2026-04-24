@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { setTaskStatus } from "@/lib/writers/tasks";
+import { deleteTask, setTaskStatus } from "@/lib/writers/tasks";
 import type { TaskStatus } from "@/lib/types";
 
 const VALID_STATUSES: ReadonlySet<TaskStatus> = new Set(["queued", "claimed", "done"]);
@@ -26,6 +26,17 @@ export async function PATCH(request: Request, { params }: Params) {
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : "write failed";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function DELETE(_request: Request, { params }: Params) {
+  const { filename } = await params;
+  try {
+    await deleteTask(filename);
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "delete failed";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
