@@ -1,6 +1,6 @@
 import { Card, CardBody } from "@/components/ui/Card";
-import { buildObsidianUri, getYoutubeVideos } from "@/lib";
-import type { YoutubeVideo } from "@/lib/types";
+import { buildObsidianUri, getYoutubeRecent, getYoutubeVideos } from "@/lib";
+import type { YoutubeRecentUpload, YoutubeVideo } from "@/lib/types";
 
 const STATUS_STYLE: Record<YoutubeVideo["statusTone"], string> = {
   "in-progress": "bg-accent/15 text-accent",
@@ -45,7 +45,10 @@ function urgencyClass(urgency: ReturnType<typeof formatTargetDate>["urgency"]): 
 }
 
 export default async function Page() {
-  const videos = await getYoutubeVideos();
+  const [videos, recent] = await Promise.all([
+    getYoutubeVideos(),
+    getYoutubeRecent(),
+  ]);
   const sorted = videos.slice().sort((a, b) => {
     const aT = a.targetPublish ? Date.parse(a.targetPublish) : Number.POSITIVE_INFINITY;
     const bT = b.targetPublish ? Date.parse(b.targetPublish) : Number.POSITIVE_INFINITY;
@@ -53,7 +56,7 @@ export default async function Page() {
   });
 
   return (
-    <div className="p-6 space-y-5">
+    <div className="p-6 space-y-6">
       <header className="space-y-1">
         <h1 className="text-lg font-medium tracking-tight">YouTube</h1>
         <p className="text-[12px] text-muted">
@@ -78,7 +81,115 @@ export default async function Page() {
           ))}
         </div>
       )}
+
+      <section className="space-y-2 pt-2">
+        <header className="flex items-baseline justify-between gap-2">
+          <h2 className="text-[11px] font-medium tracking-[0.15em] uppercase text-muted">
+            Recent uploads
+          </h2>
+          <span className="text-[10px] text-muted/60">
+            {recent.count} of last {recent.count}
+            {recent.generatedAt && (
+              <> · synced {formatSyncedRelative(recent.generatedAt)}</>
+            )}
+          </span>
+        </header>
+        {recent.videos.length === 0 ? (
+          <Card>
+            <CardBody>
+              <p className="text-[12px] text-muted/60 italic">
+                No data yet — first run of <code>youtube-recent</code> hasn&apos;t
+                landed. Wait ~1 min and refresh.
+              </p>
+            </CardBody>
+          </Card>
+        ) : (
+          <Card>
+            <CardBody className="!p-0">
+              <ul className="divide-y divide-border/40">
+                {recent.videos.map((v) => (
+                  <RecentRow key={v.videoId} video={v} />
+                ))}
+              </ul>
+            </CardBody>
+          </Card>
+        )}
+      </section>
     </div>
+  );
+}
+
+function formatSyncedRelative(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const ageMin = Math.max(0, Math.round((Date.now() - d.getTime()) / 60000));
+  if (ageMin < 1) return "just now";
+  if (ageMin < 60) return `${ageMin} min ago`;
+  const h = Math.round(ageMin / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.round(h / 24)}d ago`;
+}
+
+function formatCount(n: number | null): string {
+  if (n == null) return "—";
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return n.toString();
+}
+
+function formatDuration(s: number | null): string {
+  if (s == null) return "";
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+  return `${m}:${String(sec).padStart(2, "0")}`;
+}
+
+function formatPublished(iso: string | null): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+function RecentRow({ video }: { video: YoutubeRecentUpload }) {
+  return (
+    <li>
+      <a
+        href={video.url}
+        target="_blank"
+        rel="noreferrer"
+        className="flex items-stretch gap-3 px-3 py-2.5 hover:bg-surface-2/40 transition-colors"
+      >
+        {video.thumbnailUrl && (
+          // YouTube CDN URL — no vault storage, just lazy-load.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={video.thumbnailUrl}
+            alt=""
+            loading="lazy"
+            className="w-[120px] h-[68px] rounded object-cover bg-surface-2 shrink-0"
+          />
+        )}
+        <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+          <div className="text-sm text-foreground leading-snug line-clamp-2">
+            {video.title}
+          </div>
+          <div className="flex items-center gap-3 text-[10px] text-muted">
+            <span>{formatPublished(video.publishedAt)}</span>
+            {video.durationSeconds != null && (
+              <span className="font-mono">{formatDuration(video.durationSeconds)}</span>
+            )}
+            <span className="ml-auto flex items-center gap-3 font-mono">
+              <span title={`${video.viewCount ?? 0} views`}>{formatCount(video.viewCount)} views</span>
+              <span title={`${video.likeCount ?? 0} likes`}>{formatCount(video.likeCount)} likes</span>
+              <span title={`${video.commentCount ?? 0} comments`}>{formatCount(video.commentCount)} comments</span>
+            </span>
+          </div>
+        </div>
+      </a>
+    </li>
   );
 }
 

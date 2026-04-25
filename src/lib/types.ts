@@ -194,3 +194,21 @@ export type YoutubeVideo = {
   completedPhases: number;
   totalPhases: number;
 };
+
+export type YoutubeRecentUpload = {
+  videoId: string;
+  title: string;
+  publishedAt: string | null;
+  thumbnailUrl: string | null;
+  durationSeconds: number | null;
+  viewCount: number | null;
+  likeCount: number | null;
+  commentCount: number | null;
+  url: string;
+};
+
+export type YoutubeRecentSnapshot = {
+  generatedAt: string | null;
+  count: number;
+  videos: YoutubeRecentUpload[];
+};
