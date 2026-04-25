@@ -163,8 +163,13 @@ export type AgentsSnapshot = {
 };
 
 // Current State
+export type ThisWeekFocusItem = {
+  text: string;
+  group: string | null;
+};
+
 export type CurrentStateSnapshot = {
-  thisWeek: string[];
+  thisWeek: ThisWeekFocusItem[];
   immediateActions: string[];
   openQuestions: string[];
   sponsorsRaw: string;

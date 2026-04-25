@@ -81,8 +81,9 @@ async function main(): Promise<void> {
   heading("CURRENT STATE");
   const cs = await getCurrentState();
   console.log(`  thisWeek (top 3):`);
-  for (const line of cs.thisWeek) {
-    console.log(`    - ${line.slice(0, 90)}`);
+  for (const item of cs.thisWeek) {
+    const tag = item.group ? `[${item.group}] ` : "";
+    console.log(`    - ${tag}${item.text.slice(0, 90)}`);
   }
   console.log(
     `  immediateActions=${cs.immediateActions.length} recentDecisions=${cs.recentDecisions.length} openQuestions=${cs.openQuestions.length}`,

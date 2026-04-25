@@ -25,6 +25,31 @@ export function bulletLines(section: string | null): string[] {
     .map((l) => l.replace(BULLET_RE, "").trim());
 }
 
+export type GroupedBullet = { text: string; group: string | null };
+
+const H3_RE = /^###\s+(.+?)\s*$/;
+
+// Walks a section line-by-line, tagging each bullet with the most recent `### Heading`
+// it appeared under (null if no preceding H3). Lets parsers preserve subsection
+// grouping while still flattening into a single ordered list.
+export function bulletLinesGrouped(section: string | null): GroupedBullet[] {
+  if (!section) return [];
+  const items: GroupedBullet[] = [];
+  let group: string | null = null;
+  for (const raw of section.split(/\r?\n/)) {
+    const line = raw.trimEnd();
+    const h3 = line.match(H3_RE);
+    if (h3) {
+      group = h3[1].trim();
+      continue;
+    }
+    if (BULLET_RE.test(line)) {
+      items.push({ text: line.replace(BULLET_RE, "").trim(), group });
+    }
+  }
+  return items;
+}
+
 export function stripMarkdownBold(text: string): string {
   return text.replace(/\*\*(.*?)\*\*/g, "$1");
 }
