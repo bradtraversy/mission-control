@@ -40,12 +40,12 @@ function SponsorRow({ sponsor }: { sponsor: SponsorDeadline }) {
     <div className="space-y-1">
       <div className="flex items-baseline justify-between gap-2">
         <div className="flex items-baseline gap-2 min-w-0">
-          <span className="text-sm font-medium text-foreground shrink-0">
+          <span className="text-base font-medium text-foreground shrink-0">
             {sponsor.name}
           </span>
-          <span className="text-xs text-muted truncate">{sponsor.deliverable}</span>
+          <span className="text-sm text-muted truncate">{sponsor.deliverable}</span>
         </div>
-        <span className="text-xs text-muted shrink-0">{sponsor.due}</span>
+        <span className="text-sm text-muted shrink-0">{sponsor.due}</span>
       </div>
       <div className="flex items-center gap-2">
         <div className="flex-1 h-1 rounded-full bg-surface-2 overflow-hidden">
@@ -54,11 +54,11 @@ function SponsorRow({ sponsor }: { sponsor: SponsorDeadline }) {
             style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
           />
         </div>
-        <span className="text-[12px] text-muted font-mono tabular-nums shrink-0">
+        <span className="text-[13px] text-muted font-mono tabular-nums shrink-0">
           {formatUsd(sponsor.paidUsd)}/{formatUsd(sponsor.totalUsd)}
         </span>
       </div>
-      <div className={`text-[12px] ${statusColor}`}>{sponsor.status}</div>
+      <div className={`text-[13px] ${statusColor}`}>{sponsor.status}</div>
     </div>
   );
 }

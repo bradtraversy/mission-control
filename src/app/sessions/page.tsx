@@ -7,8 +7,8 @@ export default async function Page() {
   return (
     <div className="p-6 space-y-5">
       <header className="space-y-1">
-        <h1 className="text-lg font-medium tracking-tight">Sessions</h1>
-        <p className="text-[13px] text-muted">
+        <h1 className="text-xl font-medium tracking-tight">Sessions</h1>
+        <p className="text-[14px] text-muted">
           Unified feed from Claude and Travis · {sessions.length} total ·
           newest first
         </p>

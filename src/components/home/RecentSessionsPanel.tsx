@@ -20,7 +20,7 @@ export function RecentSessionsPanel({ sessions }: Props) {
         action={
           <Link
             href="/sessions"
-            className="text-[12px] text-muted hover:text-foreground"
+            className="text-[13px] text-muted hover:text-foreground"
           >
             View →
           </Link>
@@ -31,21 +31,21 @@ export function RecentSessionsPanel({ sessions }: Props) {
           <div key={s.relativePath} className="space-y-0.5">
             <div className="flex items-baseline gap-2">
               <span
-                className={`text-[11px] px-1.5 py-0.5 rounded shrink-0 ${
+                className={`text-[12px] px-1.5 py-0.5 rounded shrink-0 ${
                   SOURCE_STYLE[s.source] ?? "bg-surface-2 text-muted"
                 }`}
               >
                 {s.source}
               </span>
-              <span className="text-[12px] text-muted font-mono shrink-0">
+              <span className="text-[13px] text-muted font-mono shrink-0">
                 {s.date ?? "?"}
               </span>
-              <span className="text-sm text-foreground truncate flex-1">
+              <span className="text-base text-foreground truncate flex-1">
                 {s.title}
               </span>
             </div>
             {s.frontmatter.outcome && (
-              <p className="text-[12px] text-muted line-clamp-2">
+              <p className="text-[13px] text-muted line-clamp-2">
                 {truncate(s.frontmatter.outcome, 160)}
               </p>
             )}

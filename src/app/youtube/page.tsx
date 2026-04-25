@@ -58,8 +58,8 @@ export default async function Page() {
   return (
     <div className="p-6 space-y-6">
       <header className="space-y-1">
-        <h1 className="text-lg font-medium tracking-tight">YouTube</h1>
-        <p className="text-[13px] text-muted">
+        <h1 className="text-xl font-medium tracking-tight">YouTube</h1>
+        <p className="text-[14px] text-muted">
           Active videos with phase progress · {sorted.length}{" "}
           {sorted.length === 1 ? "video" : "videos"} in flight · published moves to{" "}
           <code className="text-foreground/80">YouTube/Archive/</code>
@@ -68,7 +68,7 @@ export default async function Page() {
       {sorted.length === 0 ? (
         <Card>
           <CardBody>
-            <p className="text-[13px] text-muted/60 italic">
+            <p className="text-[14px] text-muted/60 italic">
               Nothing in flight. Drop a folder under <code>YouTube/</code> with a{" "}
               <code>Progress.md</code> to see it here.
             </p>
@@ -84,10 +84,10 @@ export default async function Page() {
 
       <section className="space-y-2 pt-2">
         <header className="flex items-baseline justify-between gap-2">
-          <h2 className="text-[12px] font-medium tracking-[0.15em] uppercase text-muted">
+          <h2 className="text-[13px] font-medium tracking-[0.15em] uppercase text-muted">
             Recent uploads
           </h2>
-          <span className="text-[11px] text-muted/60">
+          <span className="text-[12px] text-muted/60">
             {recent.count} of last {recent.count}
             {recent.generatedAt && (
               <> · synced {formatSyncedRelative(recent.generatedAt)}</>
@@ -97,7 +97,7 @@ export default async function Page() {
         {recent.videos.length === 0 ? (
           <Card>
             <CardBody>
-              <p className="text-[13px] text-muted/60 italic">
+              <p className="text-[14px] text-muted/60 italic">
                 No data yet — first run of <code>youtube-recent</code> hasn&apos;t
                 landed. Wait ~1 min and refresh.
               </p>
@@ -173,10 +173,10 @@ function RecentRow({ video }: { video: YoutubeRecentUpload }) {
           />
         )}
         <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
-          <div className="text-sm text-foreground leading-snug line-clamp-2">
+          <div className="text-base text-foreground leading-snug line-clamp-2">
             {video.title}
           </div>
-          <div className="flex items-center gap-2 text-[12px] text-muted/80">
+          <div className="flex items-center gap-2 text-[13px] text-muted/80">
             <span>{formatPublished(video.publishedAt)}</span>
             {video.durationSeconds != null && (
               <>
@@ -188,15 +188,15 @@ function RecentRow({ video }: { video: YoutubeRecentUpload }) {
         </div>
         <div className="flex flex-col items-end justify-center shrink-0 min-w-[110px] text-right">
           <div
-            className="text-base font-semibold text-accent font-mono leading-none"
+            className="text-lg font-semibold text-accent font-mono leading-none"
             title={`${video.viewCount ?? 0} views`}
           >
             {formatCount(video.viewCount)}
           </div>
-          <div className="text-[11px] uppercase tracking-wider text-muted/60 mt-0.5">
+          <div className="text-[12px] uppercase tracking-wider text-muted/60 mt-0.5">
             views
           </div>
-          <div className="flex items-center gap-2 text-[12px] text-muted/80 font-mono mt-2">
+          <div className="flex items-center gap-2 text-[13px] text-muted/80 font-mono mt-2">
             <span title={`${video.likeCount ?? 0} likes`}>
               {formatCount(video.likeCount)} likes
             </span>
@@ -222,18 +222,18 @@ function VideoCard({ video }: { video: YoutubeVideo }) {
     <Card>
       <CardBody className="space-y-3 pt-4">
         <div className="flex items-start justify-between gap-2">
-          <h2 className="text-sm font-medium text-foreground leading-snug min-w-0">
+          <h2 className="text-base font-medium text-foreground leading-snug min-w-0">
             {video.title}
           </h2>
           <span
-            className={`text-[11px] px-1.5 py-0.5 rounded shrink-0 ${STATUS_STYLE[video.statusTone]}`}
+            className={`text-[12px] px-1.5 py-0.5 rounded shrink-0 ${STATUS_STYLE[video.statusTone]}`}
           >
             {STATUS_LABEL[video.statusTone]}
           </span>
         </div>
-        <div className="flex items-center gap-2 flex-wrap text-[12px]">
+        <div className="flex items-center gap-2 flex-wrap text-[13px]">
           {video.sponsor && (
-            <span className="text-[11px] px-1.5 py-0.5 rounded bg-orange-400/15 text-orange-300 font-mono">
+            <span className="text-[12px] px-1.5 py-0.5 rounded bg-orange-400/15 text-orange-300 font-mono">
               {video.sponsor.name}
               {video.sponsor.totalUsd != null && (
                 <span className="opacity-70">
@@ -251,13 +251,13 @@ function VideoCard({ video }: { video: YoutubeVideo }) {
           )}
           <a
             href={obsidianUri}
-            className="text-muted hover:text-foreground ml-auto text-[11px]"
+            className="text-muted hover:text-foreground ml-auto text-[12px]"
           >
             Open ↗
           </a>
         </div>
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-[12px]">
+          <div className="flex items-center justify-between text-[13px]">
             <span className="text-muted">
               Progress · {video.completedPhases} of {video.totalPhases}
             </span>

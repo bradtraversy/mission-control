@@ -12,8 +12,8 @@ export function ThisWeekPanel({ items, className }: Props) {
       <CardHeader title="This Week's Focus" meta={`top ${items.length}`} />
       <CardBody className="space-y-3">
         {items.length === 0 ? (
-          <p className="text-sm text-muted">
-            No priorities set. Update <code className="text-xs">Core/Context/Current State.md</code>.
+          <p className="text-base text-muted">
+            No priorities set. Update <code className="text-sm">Core/Context/Current State.md</code>.
           </p>
         ) : (
           items.map((item, i) => {
@@ -22,13 +22,13 @@ export function ThisWeekPanel({ items, className }: Props) {
             const description = rest.join(" — ");
             return (
               <div key={`${i}-${first}`} className="flex gap-3">
-                <span className="text-xs font-medium text-muted/60 mt-0.5 tabular-nums">
+                <span className="text-sm font-medium text-muted/60 mt-0.5 tabular-nums">
                   {i + 1}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-medium text-foreground">{first}</h3>
+                  <h3 className="text-base font-medium text-foreground">{first}</h3>
                   {description && (
-                    <p className="text-xs text-muted mt-0.5">{description}</p>
+                    <p className="text-sm text-muted mt-0.5">{description}</p>
                   )}
                 </div>
               </div>

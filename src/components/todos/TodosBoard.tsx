@@ -162,7 +162,7 @@ function Chip({
     <button
       type="button"
       onClick={onClick}
-      className={`text-[12px] px-2 py-1 rounded border transition-colors ${
+      className={`text-[13px] px-2 py-1 rounded border transition-colors ${
         active
           ? "bg-accent/15 border-accent/40 text-foreground"
           : "bg-surface-2/60 border-border text-muted hover:text-foreground hover:border-border/80"
@@ -214,13 +214,13 @@ function Column({
             <button
               type="button"
               onClick={() => setAdding((v) => !v)}
-              className="text-[12px] text-muted hover:text-foreground"
+              className="text-[13px] text-muted hover:text-foreground"
             >
               {adding ? "Cancel" : "+ Add"}
             </button>
             <a
               href={editUri}
-              className="text-[12px] text-muted hover:text-foreground"
+              className="text-[13px] text-muted hover:text-foreground"
             >
               Edit ↗
             </a>
@@ -245,16 +245,16 @@ function Column({
             }}
             disabled={disabled}
             placeholder="Type your todo, include #tags inline"
-            className="w-full text-sm bg-surface-2/60 border border-border rounded px-2 py-1.5 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-accent/60"
+            className="w-full text-base bg-surface-2/60 border border-border rounded px-2 py-1.5 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-accent/60"
           />
-          <p className="text-[11px] text-muted/50 mt-1">
+          <p className="text-[12px] text-muted/50 mt-1">
             Enter to add · Esc to cancel · IDs assign automatically
           </p>
         </div>
       )}
       <CardBody className="space-y-0.5">
         {open.length === 0 && done.length === 0 && (
-          <p className="text-[12px] text-muted/60 italic py-1">
+          <p className="text-[13px] text-muted/60 italic py-1">
             No todos match this filter.
           </p>
         )}
@@ -269,7 +269,7 @@ function Column({
         ))}
         {done.length > 0 && (
           <>
-            <div className="pt-2 mt-1 border-t border-border text-[11px] uppercase tracking-wider text-muted/50">
+            <div className="pt-2 mt-1 border-t border-border text-[12px] uppercase tracking-wider text-muted/50">
               Done
             </div>
             {done.map((t) => (
@@ -313,11 +313,11 @@ function TodoRow({
             : "border-border hover:border-foreground/40"
         }`}
       />
-      <span className="text-[12px] text-muted/60 font-mono tabular-nums shrink-0 mt-0.5">
+      <span className="text-[13px] text-muted/60 font-mono tabular-nums shrink-0 mt-0.5">
         #{todo.id}
       </span>
       <span
-        className={`text-sm flex-1 min-w-0 ${
+        className={`text-base flex-1 min-w-0 ${
           todo.done ? "line-through text-muted" : "text-foreground"
         }`}
       >
@@ -344,7 +344,7 @@ function TodoRow({
           {todo.tags.map((tag) => (
             <span
               key={tag}
-              className="text-[11px] px-1.5 py-0.5 rounded bg-surface-2 text-muted"
+              className="text-[12px] px-1.5 py-0.5 rounded bg-surface-2 text-muted"
             >
               #{tag}
             </span>
@@ -373,7 +373,7 @@ function MoveButton({
       disabled={disabled}
       title={target ? `Move to ${target}` : ""}
       aria-label={target ? `Move to ${target}` : "no move available"}
-      className="text-muted/60 hover:text-foreground disabled:text-muted/20 disabled:cursor-not-allowed px-1 text-xs leading-none"
+      className="text-muted/60 hover:text-foreground disabled:text-muted/20 disabled:cursor-not-allowed px-1 text-sm leading-none"
     >
       {direction === "left" ? "←" : "→"}
     </button>

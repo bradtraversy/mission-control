@@ -24,7 +24,7 @@ export function DigestPreviewPanel({ digest }: Props) {
         action={
           <Link
             href="/research"
-            className="text-[12px] text-muted hover:text-foreground"
+            className="text-[13px] text-muted hover:text-foreground"
           >
             Open →
           </Link>
@@ -32,7 +32,7 @@ export function DigestPreviewPanel({ digest }: Props) {
       />
       <CardBody className="space-y-2">
         {!digest ? (
-          <p className="text-sm text-muted">No digest yet today.</p>
+          <p className="text-base text-muted">No digest yet today.</p>
         ) : (
           <>
             {topics.length > 0 && (
@@ -40,7 +40,7 @@ export function DigestPreviewPanel({ digest }: Props) {
                 {topics.map((t) => (
                   <span
                     key={t}
-                    className="text-[11px] px-1.5 py-0.5 rounded bg-surface-2 text-muted"
+                    className="text-[12px] px-1.5 py-0.5 rounded bg-surface-2 text-muted"
                   >
                     #{t}
                   </span>
@@ -48,7 +48,7 @@ export function DigestPreviewPanel({ digest }: Props) {
               </div>
             )}
             {headings.length > 0 ? (
-              <ul className="space-y-1 text-sm">
+              <ul className="space-y-1 text-base">
                 {headings.map((h) => (
                   <li key={h} className="flex items-start gap-2">
                     <span className="text-muted/40 mt-0.5">›</span>
@@ -57,7 +57,7 @@ export function DigestPreviewPanel({ digest }: Props) {
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-muted">(empty digest body)</p>
+              <p className="text-base text-muted">(empty digest body)</p>
             )}
           </>
         )}

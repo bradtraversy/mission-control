@@ -27,35 +27,35 @@ export default async function Page({
     <div className="p-6 space-y-5 max-w-3xl">
       <Link
         href="/projects"
-        className="text-[12px] text-muted hover:text-foreground"
+        className="text-[13px] text-muted hover:text-foreground"
       >
         ← Back to projects
       </Link>
 
       <header className="space-y-3 pb-4 border-b border-border">
         <div className="flex items-center gap-3 flex-wrap">
-          <h1 className="text-xl font-medium tracking-tight">{project.name}</h1>
+          <h1 className="text-2xl font-medium tracking-tight">{project.name}</h1>
           <span
-            className={`text-[11px] px-1.5 py-0.5 rounded border ${TONE_STYLE[project.statusTone]}`}
+            className={`text-[12px] px-1.5 py-0.5 rounded border ${TONE_STYLE[project.statusTone]}`}
           >
             {project.statusTone}
           </span>
           <a
             href={obsidianUri}
-            className="ml-auto text-[12px] text-muted hover:text-foreground"
+            className="ml-auto text-[13px] text-muted hover:text-foreground"
           >
             Edit in Obsidian ↗
           </a>
         </div>
         {project.type && (
-          <p className="text-[13px] text-muted">{project.type}</p>
+          <p className="text-[14px] text-muted">{project.type}</p>
         )}
         {project.repoUrl && (
           <a
             href={project.repoUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-block text-[12px] text-accent hover:underline"
+            className="inline-block text-[13px] text-accent hover:underline"
           >
             {project.repoUrl} ↗
           </a>
