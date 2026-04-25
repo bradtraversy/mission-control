@@ -21,7 +21,7 @@ export async function TopBar() {
         >
           <Search size={13} strokeWidth={1.75} />
           <span>Search</span>
-          <kbd className="ml-8 text-[10px] text-muted/70">⌘K</kbd>
+          <kbd className="ml-8 text-[11px] text-muted/70">⌘K</kbd>
         </button>
 
         <PauseToggle paused={control.paused} />

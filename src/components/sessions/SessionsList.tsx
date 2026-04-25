@@ -49,13 +49,13 @@ export function SessionsList({ sessions }: Props) {
             onClick={() => setFilter(key)}
           />
         ))}
-        <span className="text-[11px] text-muted ml-2">
+        <span className="text-[12px] text-muted ml-2">
           {filtered.length} {filtered.length === 1 ? "session" : "sessions"}
         </span>
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-[12px] text-muted py-8 text-center border border-dashed border-border rounded-md">
+        <div className="text-[13px] text-muted py-8 text-center border border-dashed border-border rounded-md">
           No sessions match this filter.
         </div>
       ) : (
@@ -72,11 +72,11 @@ export function SessionsList({ sessions }: Props) {
                 >
                   <div className="flex items-baseline gap-2 flex-wrap">
                     <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded shrink-0 ${SOURCE_STYLE[s.source]}`}
+                      className={`text-[11px] px-1.5 py-0.5 rounded shrink-0 ${SOURCE_STYLE[s.source]}`}
                     >
                       {SOURCE_LABEL[s.source]}
                     </span>
-                    <span className="text-[11px] text-muted font-mono shrink-0">
+                    <span className="text-[12px] text-muted font-mono shrink-0">
                       {s.date ?? "—"}
                     </span>
                     <span className="text-sm text-foreground truncate">
@@ -87,7 +87,7 @@ export function SessionsList({ sessions }: Props) {
                         {projects.slice(0, 3).map((p) => (
                           <span
                             key={p}
-                            className="text-[10px] text-muted/80 px-1.5 py-0.5 rounded bg-surface-2"
+                            className="text-[11px] text-muted/80 px-1.5 py-0.5 rounded bg-surface-2"
                           >
                             {p}
                           </span>
@@ -96,7 +96,7 @@ export function SessionsList({ sessions }: Props) {
                     )}
                   </div>
                   {s.frontmatter.outcome && (
-                    <p className="mt-1 text-[12px] text-muted line-clamp-2">
+                    <p className="mt-1 text-[13px] text-muted line-clamp-2">
                       {s.frontmatter.outcome}
                     </p>
                   )}
@@ -123,7 +123,7 @@ function Chip({
     <button
       type="button"
       onClick={onClick}
-      className={`text-[11px] px-2 py-1 rounded border transition-colors ${
+      className={`text-[12px] px-2 py-1 rounded border transition-colors ${
         active
           ? "bg-accent/15 border-accent/40 text-foreground"
           : "bg-surface border-border text-muted hover:text-foreground"

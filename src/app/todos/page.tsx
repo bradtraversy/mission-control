@@ -18,7 +18,7 @@ export default async function Page() {
     <div className="p-6 space-y-5">
       <header className="space-y-1">
         <h1 className="text-lg font-medium tracking-tight">Todos</h1>
-        <p className="text-[12px] text-muted">
+        <p className="text-[13px] text-muted">
           Brad&apos;s curated long-term backlog · {openCount} open across three
           columns · IDs preserved from the vault
         </p>

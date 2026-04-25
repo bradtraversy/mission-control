@@ -24,14 +24,14 @@ export default async function Page() {
       <header className="flex items-baseline justify-between gap-4 flex-wrap">
         <div className="space-y-1">
           <h1 className="text-lg font-medium tracking-tight">Projects</h1>
-          <p className="text-[12px] text-muted">
+          <p className="text-[13px] text-muted">
             {projects.length} projects · sourced from{" "}
             <code>Core/Context/Projects.md</code>
           </p>
         </div>
         <a
           href={obsidianUri}
-          className="text-[11px] text-muted hover:text-foreground"
+          className="text-[12px] text-muted hover:text-foreground"
         >
           Edit in Obsidian ↗
         </a>
@@ -49,7 +49,7 @@ export default async function Page() {
                 title={p.name}
                 action={
                   <span
-                    className={`text-[10px] px-1.5 py-0.5 rounded border ${TONE_STYLE[p.statusTone]}`}
+                    className={`text-[11px] px-1.5 py-0.5 rounded border ${TONE_STYLE[p.statusTone]}`}
                   >
                     {p.statusTone}
                   </span>
@@ -57,18 +57,18 @@ export default async function Page() {
               />
               <CardBody className="space-y-2">
                 {p.type && (
-                  <p className="text-[12px] text-muted line-clamp-2">
+                  <p className="text-[13px] text-muted line-clamp-2">
                     {shorten(p.type, 120)}
                   </p>
                 )}
                 {p.status && (
-                  <p className="text-[11px] text-foreground/80 line-clamp-2">
+                  <p className="text-[12px] text-foreground/80 line-clamp-2">
                     <span className="text-muted/70">Status: </span>
                     {shorten(p.status, 100)}
                   </p>
                 )}
                 {p.nextAction && (
-                  <p className="text-[11px] text-accent/90 line-clamp-2">
+                  <p className="text-[12px] text-accent/90 line-clamp-2">
                     <span className="text-muted/70">Next: </span>
                     {shorten(p.nextAction, 100)}
                   </p>
