@@ -160,7 +160,7 @@ function RecentRow({ video }: { video: YoutubeRecentUpload }) {
         href={video.url}
         target="_blank"
         rel="noreferrer"
-        className="flex items-stretch gap-3 px-3 py-2.5 hover:bg-surface-2/40 transition-colors"
+        className="flex items-stretch gap-3 px-3 py-3 hover:bg-surface-2/40 transition-colors"
       >
         {video.thumbnailUrl && (
           // YouTube CDN URL — no vault storage, just lazy-load.
@@ -176,15 +176,33 @@ function RecentRow({ video }: { video: YoutubeRecentUpload }) {
           <div className="text-sm text-foreground leading-snug line-clamp-2">
             {video.title}
           </div>
-          <div className="flex items-center gap-3 text-[10px] text-muted">
+          <div className="flex items-center gap-2 text-[11px] text-muted/80">
             <span>{formatPublished(video.publishedAt)}</span>
             {video.durationSeconds != null && (
-              <span className="font-mono">{formatDuration(video.durationSeconds)}</span>
+              <>
+                <span className="text-muted/40">·</span>
+                <span className="font-mono">{formatDuration(video.durationSeconds)}</span>
+              </>
             )}
-            <span className="ml-auto flex items-center gap-3 font-mono">
-              <span title={`${video.viewCount ?? 0} views`}>{formatCount(video.viewCount)} views</span>
-              <span title={`${video.likeCount ?? 0} likes`}>{formatCount(video.likeCount)} likes</span>
-              <span title={`${video.commentCount ?? 0} comments`}>{formatCount(video.commentCount)} comments</span>
+          </div>
+        </div>
+        <div className="flex flex-col items-end justify-center shrink-0 min-w-[110px] text-right">
+          <div
+            className="text-base font-semibold text-accent font-mono leading-none"
+            title={`${video.viewCount ?? 0} views`}
+          >
+            {formatCount(video.viewCount)}
+          </div>
+          <div className="text-[10px] uppercase tracking-wider text-muted/60 mt-0.5">
+            views
+          </div>
+          <div className="flex items-center gap-2 text-[11px] text-muted/80 font-mono mt-2">
+            <span title={`${video.likeCount ?? 0} likes`}>
+              {formatCount(video.likeCount)} likes
+            </span>
+            <span className="text-muted/40">·</span>
+            <span title={`${video.commentCount ?? 0} comments`}>
+              {formatCount(video.commentCount)} comments
             </span>
           </div>
         </div>
