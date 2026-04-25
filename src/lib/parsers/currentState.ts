@@ -1,14 +1,13 @@
 import { readMarkdown } from "../vault";
-import { bulletLines, sectionBody } from "../markdown";
+import { bulletLines, bulletLinesGrouped, sectionBody } from "../markdown";
 import type { CurrentStateSnapshot } from "../types";
 
 export async function getCurrentState(): Promise<CurrentStateSnapshot> {
   const file = await readMarkdown("Core/Context/Current State.md");
   const body = file.body;
-  const thisWeek = bulletLines(sectionBody(body, "This Week's Focus")).slice(
-    0,
-    3,
-  );
+  const thisWeek = bulletLinesGrouped(
+    sectionBody(body, "This Week's Focus"),
+  ).slice(0, 3);
   const immediateActions = bulletLines(
     sectionBody(body, "Immediate Next Actions"),
   );
