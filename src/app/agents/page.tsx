@@ -7,7 +7,7 @@ const PLACEHOLDER_RE = /<fill in\b[^>]*>/gi;
 
 function NeedsContentPill({ label = "needs content" }: { label?: string }) {
   return (
-    <span className="inline-flex items-center text-[10px] uppercase tracking-wider font-medium px-1.5 py-0.5 rounded border border-amber-400/30 bg-amber-400/10 text-amber-300/80 italic">
+    <span className="inline-flex items-center text-[11px] uppercase tracking-wider font-medium px-1.5 py-0.5 rounded border border-amber-400/30 bg-amber-400/10 text-amber-300/80 italic">
       {label}
     </span>
   );
@@ -31,13 +31,13 @@ function AgentCard({ agent }: { agent: AgentEntry }) {
       />
       <CardBody className="space-y-3">
         {agent.fields.length > 0 && (
-          <dl className="space-y-1.5 text-[12px]">
+          <dl className="space-y-1.5 text-[13px]">
             {agent.fields.map((field) => (
               <div
                 key={field.label}
                 className="grid grid-cols-[80px_1fr] gap-2 items-baseline"
               >
-                <dt className="text-muted/80 text-[11px] uppercase tracking-wider">
+                <dt className="text-muted/80 text-[12px] uppercase tracking-wider">
                   {field.label}
                 </dt>
                 <dd className="text-foreground/90">
@@ -92,7 +92,7 @@ export default async function Page() {
       <header className="flex items-baseline justify-between gap-4 flex-wrap">
         <div className="space-y-1">
           <h1 className="text-lg font-medium tracking-tight">Agents</h1>
-          <p className="text-[12px] text-muted">
+          <p className="text-[13px] text-muted">
             {snapshot.roster.length} in roster · sourced from{" "}
             <code>{snapshot.relativePath}</code>
             {totalPlaceholders > 0 && (
@@ -108,7 +108,7 @@ export default async function Page() {
         </div>
         <a
           href={obsidianUri}
-          className="text-[11px] text-muted hover:text-foreground"
+          className="text-[12px] text-muted hover:text-foreground"
         >
           Edit in Obsidian ↗
         </a>
@@ -116,7 +116,7 @@ export default async function Page() {
 
       <section className="space-y-2">
         <div className="flex items-center gap-2">
-          <h2 className="text-[11px] font-medium tracking-[0.15em] uppercase text-muted">
+          <h2 className="text-[12px] font-medium tracking-[0.15em] uppercase text-muted">
             Mission
           </h2>
           {snapshot.mission.hasPlaceholder && <NeedsContentPill />}
@@ -135,7 +135,7 @@ export default async function Page() {
       </section>
 
       <section className="space-y-2">
-        <h2 className="text-[11px] font-medium tracking-[0.15em] uppercase text-muted">
+        <h2 className="text-[12px] font-medium tracking-[0.15em] uppercase text-muted">
           Roster
         </h2>
         {snapshot.roster.length === 0 ? (
@@ -154,7 +154,7 @@ export default async function Page() {
 
       {snapshot.routing && (
         <section className="space-y-2">
-          <h2 className="text-[11px] font-medium tracking-[0.15em] uppercase text-muted">
+          <h2 className="text-[12px] font-medium tracking-[0.15em] uppercase text-muted">
             Routing rules
           </h2>
           <Card>

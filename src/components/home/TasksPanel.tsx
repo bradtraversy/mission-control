@@ -28,7 +28,7 @@ export function TasksPanel({ tasks }: Props) {
         action={
           <Link
             href="/tasks"
-            className="text-[11px] text-muted hover:text-foreground"
+            className="text-[12px] text-muted hover:text-foreground"
           >
             View →
           </Link>
@@ -48,7 +48,7 @@ export function TasksPanel({ tasks }: Props) {
                   {t.title}
                 </span>
                 <span
-                  className={`text-[10px] uppercase tracking-wider shrink-0 ${
+                  className={`text-[11px] uppercase tracking-wider shrink-0 ${
                     STATUS_STYLE[t.status] ?? "text-muted"
                   }`}
                 >
@@ -57,18 +57,18 @@ export function TasksPanel({ tasks }: Props) {
               </div>
               <div className="flex items-center gap-2">
                 <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded ${
+                  className={`text-[11px] px-1.5 py-0.5 rounded ${
                     AGENT_STYLE[t.agent] ?? AGENT_STYLE.brad
                   }`}
                 >
                   {t.agent}
                 </span>
                 {t.refTodo && (
-                  <span className="text-[10px] text-muted/70">
+                  <span className="text-[11px] text-muted/70">
                     ref {t.refTodo.column[0].toUpperCase() + t.refTodo.column.slice(1)}#{t.refTodo.id}
                   </span>
                 )}
-                <span className="text-[10px] text-muted ml-auto">
+                <span className="text-[11px] text-muted ml-auto">
                   {formatRelativeTime(t.created)}
                 </span>
               </div>

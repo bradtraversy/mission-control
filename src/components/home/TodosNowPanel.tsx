@@ -18,7 +18,7 @@ export function TodosNowPanel({ todos }: Props) {
         action={
           <Link
             href="/todos"
-            className="text-[11px] text-muted hover:text-foreground"
+            className="text-[12px] text-muted hover:text-foreground"
           >
             View →
           </Link>
@@ -30,7 +30,7 @@ export function TodosNowPanel({ todos }: Props) {
         ))}
         {done.length > 0 && (
           <>
-            <div className="pt-2 mt-1 border-t border-border text-[10px] uppercase tracking-wider text-muted/50">
+            <div className="pt-2 mt-1 border-t border-border text-[11px] uppercase tracking-wider text-muted/50">
               Done
             </div>
             {done.map((t) => (
@@ -53,7 +53,7 @@ function TodoRow({ todo }: { todo: TodoItem }) {
             : "border-border"
         }`}
       />
-      <span className="text-[11px] text-muted/60 font-mono tabular-nums shrink-0 mt-0.5">
+      <span className="text-[12px] text-muted/60 font-mono tabular-nums shrink-0 mt-0.5">
         #{todo.id}
       </span>
       <span
@@ -68,7 +68,7 @@ function TodoRow({ todo }: { todo: TodoItem }) {
           {todo.tags.map((tag) => (
             <span
               key={tag}
-              className="text-[10px] px-1.5 py-0.5 rounded bg-surface-2 text-muted"
+              className="text-[11px] px-1.5 py-0.5 rounded bg-surface-2 text-muted"
             >
               #{tag}
             </span>

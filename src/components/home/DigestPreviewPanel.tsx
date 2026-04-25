@@ -24,7 +24,7 @@ export function DigestPreviewPanel({ digest }: Props) {
         action={
           <Link
             href="/research"
-            className="text-[11px] text-muted hover:text-foreground"
+            className="text-[12px] text-muted hover:text-foreground"
           >
             Open →
           </Link>
@@ -40,7 +40,7 @@ export function DigestPreviewPanel({ digest }: Props) {
                 {topics.map((t) => (
                   <span
                     key={t}
-                    className="text-[10px] px-1.5 py-0.5 rounded bg-surface-2 text-muted"
+                    className="text-[11px] px-1.5 py-0.5 rounded bg-surface-2 text-muted"
                   >
                     #{t}
                   </span>

@@ -78,19 +78,19 @@ export default async function Page() {
       <header className="flex items-baseline justify-between gap-4 flex-wrap">
         <div className="space-y-1">
           <h1 className="text-lg font-medium tracking-tight">Network</h1>
-          <p className="text-[12px] text-muted">
+          <p className="text-[13px] text-muted">
             {machines.length} machines · {onlineCount} online · updated{" "}
             {formatIso(snapshot.lastUpdated)}
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <span className="flex items-center gap-2 text-[12px] text-muted">
+          <span className="flex items-center gap-2 text-[13px] text-muted">
             <span
               className={`inline-block h-2 w-2 rounded-full ${STATUS_DOT[overallStatus]}`}
             />
             {connectivity.status ?? "unknown"}
           </span>
-          <span className="text-[11px] text-muted">
+          <span className="text-[12px] text-muted">
             gateway {connectivity.gatewayOk ? "✓" : "✗"} · internet{" "}
             {connectivity.internetOk ? "✓" : "✗"}
           </span>
@@ -139,7 +139,7 @@ function MachineCard({ machine }: { machine: NetworkMachine }) {
         title={machine.hostname}
         meta={machine.ip ?? undefined}
         action={
-          <span className="flex items-center gap-1.5 text-[10px] text-muted">
+          <span className="flex items-center gap-1.5 text-[11px] text-muted">
             <span
               className={`inline-block h-1.5 w-1.5 rounded-full ${STATUS_DOT[status]}`}
             />
@@ -152,7 +152,7 @@ function MachineCard({ machine }: { machine: NetworkMachine }) {
           <div className="space-y-2">
             {machine.volumes.map((v) => (
               <div key={v.mount} className="space-y-1">
-                <div className="flex items-center justify-between text-[11px]">
+                <div className="flex items-center justify-between text-[12px]">
                   <span className="font-mono text-muted">{v.mount}</span>
                   <span className="text-muted">
                     {v.usedGb} / {v.totalGb} GB ({v.percentUsed}%)
@@ -168,12 +168,12 @@ function MachineCard({ machine }: { machine: NetworkMachine }) {
             ))}
           </div>
         ) : (
-          <p className="text-[11px] text-muted">No volumes reported.</p>
+          <p className="text-[12px] text-muted">No volumes reported.</p>
         )}
 
         {machine.services.length > 0 && (
           <div className="space-y-1">
-            <div className="text-[10px] uppercase tracking-wider text-muted/60">
+            <div className="text-[11px] uppercase tracking-wider text-muted/60">
               Services
             </div>
             <ul className="flex flex-wrap gap-1">
@@ -182,7 +182,7 @@ function MachineCard({ machine }: { machine: NetworkMachine }) {
                 return (
                   <li
                     key={s.name}
-                    className={`text-[10px] px-1.5 py-0.5 rounded ${
+                    className={`text-[11px] px-1.5 py-0.5 rounded ${
                       ok
                         ? "bg-emerald-400/15 text-emerald-300"
                         : "bg-rose-400/20 text-rose-300"
@@ -204,16 +204,16 @@ function MachineCard({ machine }: { machine: NetworkMachine }) {
 function AutomationsTable({ rows }: { rows: NetworkAutomation[] }) {
   if (rows.length === 0) {
     return (
-      <p className="text-[12px] text-muted py-2">
+      <p className="text-[13px] text-muted py-2">
         No automations reported in <code>automations-health.json</code>.
       </p>
     );
   }
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-[12px]">
+      <table className="w-full text-[13px]">
         <thead>
-          <tr className="text-left text-[10px] uppercase tracking-wider text-muted/60 border-b border-border">
+          <tr className="text-left text-[11px] uppercase tracking-wider text-muted/60 border-b border-border">
             <th className="py-2 pr-3 font-medium">Status</th>
             <th className="py-2 pr-3 font-medium">Name</th>
             <th className="py-2 pr-3 font-medium">Owner</th>
@@ -228,7 +228,7 @@ function AutomationsTable({ rows }: { rows: NetworkAutomation[] }) {
             <tr key={a.id} className="border-b border-border/40 last:border-0">
               <td className="py-2 pr-3">
                 <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded ${LIGHT_STYLE[a.trafficLight]}`}
+                  className={`text-[11px] px-1.5 py-0.5 rounded ${LIGHT_STYLE[a.trafficLight]}`}
                 >
                   {a.lastStatus ?? a.trafficLight}
                 </span>
@@ -238,12 +238,12 @@ function AutomationsTable({ rows }: { rows: NetworkAutomation[] }) {
                 {a.owner ? (
                   <span
                     title={OWNER_TOOLTIP[a.owner] ?? ""}
-                    className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${OWNER_STYLE[a.owner] ?? "bg-surface-2 text-muted"}`}
+                    className={`text-[11px] px-1.5 py-0.5 rounded font-mono ${OWNER_STYLE[a.owner] ?? "bg-surface-2 text-muted"}`}
                   >
                     {a.owner}
                   </span>
                 ) : (
-                  <span className="text-[10px] text-muted/60">—</span>
+                  <span className="text-[11px] text-muted/60">—</span>
                 )}
               </td>
               <td className="py-2 pr-3 text-muted font-mono">
@@ -267,16 +267,16 @@ function AutomationsTable({ rows }: { rows: NetworkAutomation[] }) {
 function CronsTable({ rows }: { rows: NetworkCronJob[] }) {
   if (rows.length === 0) {
     return (
-      <p className="text-[12px] text-muted py-2">
+      <p className="text-[13px] text-muted py-2">
         No cron jobs reported in <code>cron-jobs.json</code>.
       </p>
     );
   }
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-[12px]">
+      <table className="w-full text-[13px]">
         <thead>
-          <tr className="text-left text-[10px] uppercase tracking-wider text-muted/60 border-b border-border">
+          <tr className="text-left text-[11px] uppercase tracking-wider text-muted/60 border-b border-border">
             <th className="py-2 pr-3 font-medium">Host</th>
             <th className="py-2 pr-3 font-medium">Name</th>
             <th className="py-2 pr-3 font-medium">Schedule</th>
@@ -304,7 +304,7 @@ function CronsTable({ rows }: { rows: NetworkCronJob[] }) {
               </td>
               <td className="py-2 pr-3">
                 <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded ${
+                  className={`text-[11px] px-1.5 py-0.5 rounded ${
                     c.lastStatus === "ok"
                       ? "bg-emerald-400/15 text-emerald-300"
                       : c.lastStatus

@@ -54,11 +54,11 @@ function SponsorRow({ sponsor }: { sponsor: SponsorDeadline }) {
             style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
           />
         </div>
-        <span className="text-[11px] text-muted font-mono tabular-nums shrink-0">
+        <span className="text-[12px] text-muted font-mono tabular-nums shrink-0">
           {formatUsd(sponsor.paidUsd)}/{formatUsd(sponsor.totalUsd)}
         </span>
       </div>
-      <div className={`text-[11px] ${statusColor}`}>{sponsor.status}</div>
+      <div className={`text-[12px] ${statusColor}`}>{sponsor.status}</div>
     </div>
   );
 }

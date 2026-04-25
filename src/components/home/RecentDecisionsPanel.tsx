@@ -21,7 +21,7 @@ export function RecentDecisionsPanel({ items }: Props) {
             return (
               <div key={`${i}-${date ?? "x"}`} className="space-y-0.5">
                 {date && (
-                  <span className="text-[10px] text-muted font-mono">
+                  <span className="text-[11px] text-muted font-mono">
                     {date}
                   </span>
                 )}

@@ -159,7 +159,7 @@ export function TasksBoard({ tasks, taskUris }: Props) {
         <button
           type="button"
           onClick={() => setAdding((v) => !v)}
-          className="ml-auto text-[11px] px-2 py-1 rounded border border-border bg-surface-2/60 text-muted hover:text-foreground"
+          className="ml-auto text-[12px] px-2 py-1 rounded border border-border bg-surface-2/60 text-muted hover:text-foreground"
         >
           {adding ? "Cancel" : "+ New Task"}
         </button>
@@ -200,12 +200,12 @@ export function TasksBoard({ tasks, taskUris }: Props) {
             className="w-full text-sm bg-surface-2/60 border border-border rounded px-2 py-1.5 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-accent/60 resize-y font-mono"
           />
           <div className="flex items-center gap-2">
-            <label className="text-[11px] text-muted">Assign to</label>
+            <label className="text-[12px] text-muted">Assign to</label>
             <select
               value={draftAgent}
               onChange={(e) => setDraftAgent(e.target.value as TaskAgent)}
               disabled={isPending}
-              className="text-[12px] bg-surface-2/60 border border-border rounded px-1.5 py-1 text-foreground focus:outline-none focus:border-accent/60"
+              className="text-[13px] bg-surface-2/60 border border-border rounded px-1.5 py-1 text-foreground focus:outline-none focus:border-accent/60"
             >
               <option value="travis">Travis</option>
               <option value="claude-code">Claude Code</option>
@@ -216,12 +216,12 @@ export function TasksBoard({ tasks, taskUris }: Props) {
               type="button"
               onClick={submitNew}
               disabled={isPending || !draftTitle.trim()}
-              className="ml-auto text-[11px] px-2.5 py-1 rounded bg-accent/20 border border-accent/40 text-foreground hover:bg-accent/30 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="ml-auto text-[12px] px-2.5 py-1 rounded bg-accent/20 border border-accent/40 text-foreground hover:bg-accent/30 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Create
             </button>
           </div>
-          <p className="text-[10px] text-muted/50">
+          <p className="text-[11px] text-muted/50">
             Title + optional body assigned to the chosen agent · Enter (in title) or ⌘/Ctrl+Enter (in body) to create · Esc to cancel
           </p>
         </div>
@@ -265,7 +265,7 @@ function Chip({
     <button
       type="button"
       onClick={onClick}
-      className={`text-[11px] px-2 py-1 rounded border transition-colors ${
+      className={`text-[12px] px-2 py-1 rounded border transition-colors ${
         active
           ? "bg-accent/15 border-accent/40 text-foreground"
           : "bg-surface-2/60 border-border text-muted hover:text-foreground hover:border-border/80"
@@ -299,7 +299,7 @@ function Column({
       />
       <CardBody className="space-y-2">
         {tasks.length === 0 && (
-          <p className="text-[11px] text-muted/60 italic py-1">
+          <p className="text-[12px] text-muted/60 italic py-1">
             {status === "queued"
               ? "No tasks waiting. Ping Travis or drop one in."
               : status === "claimed"
@@ -356,7 +356,7 @@ function TaskCard({
         aria-expanded={expanded}
       >
         <span
-          className={`shrink-0 text-muted/60 text-[10px] leading-snug pt-0.5 transition-transform ${expanded ? "rotate-90" : ""}`}
+          className={`shrink-0 text-muted/60 text-[11px] leading-snug pt-0.5 transition-transform ${expanded ? "rotate-90" : ""}`}
           aria-hidden="true"
         >
           ▸
@@ -394,23 +394,23 @@ function TaskCard({
       </div>
       <div className="flex items-center gap-2 flex-wrap">
         <span
-          className={`text-[10px] px-1.5 py-0.5 rounded ${AGENT_STYLE[task.agent]}`}
+          className={`text-[11px] px-1.5 py-0.5 rounded ${AGENT_STYLE[task.agent]}`}
         >
           {task.agent}
         </span>
         {task.refTodo && (
-          <span className="text-[10px] text-muted/70">
+          <span className="text-[11px] text-muted/70">
             ref {task.refTodo.column[0].toUpperCase() + task.refTodo.column.slice(1)}#{task.refTodo.id}
           </span>
         )}
-        <span className="text-[10px] text-muted ml-auto">
+        <span className="text-[11px] text-muted ml-auto">
           {formatRelativeTime(task.created)}
         </span>
         {uri && (
           <a
             href={uri}
             onClick={stop}
-            className="text-[10px] text-muted hover:text-foreground"
+            className="text-[11px] text-muted hover:text-foreground"
           >
             Edit ↗
           </a>
@@ -421,7 +421,7 @@ function TaskCard({
           {hasBody ? (
             <MarkdownBody content={bodyForDisplay} />
           ) : (
-            <p className="text-[12px] text-muted/60 italic">
+            <p className="text-[13px] text-muted/60 italic">
               (no body — task has just a title)
             </p>
           )}

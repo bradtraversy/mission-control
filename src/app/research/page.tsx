@@ -16,7 +16,7 @@ export default async function Page({
       <div className="p-6 space-y-4">
         <header className="space-y-1">
           <h1 className="text-lg font-medium tracking-tight">Research</h1>
-          <p className="text-[12px] text-muted">
+          <p className="text-[13px] text-muted">
             No digests in <code>Research/Digests/</code> yet.
           </p>
         </header>
@@ -37,7 +37,7 @@ export default async function Page({
     <div className="p-6 space-y-5 max-w-3xl">
       <header className="space-y-1">
         <h1 className="text-lg font-medium tracking-tight">Research</h1>
-        <p className="text-[12px] text-muted">
+        <p className="text-[13px] text-muted">
           {digests.length} {digests.length === 1 ? "digest" : "digests"} ·
           newest first
         </p>
@@ -54,7 +54,7 @@ export default async function Page({
             <Link
               key={d.relativePath}
               href={href}
-              className={`text-[11px] px-2 py-1 rounded border font-mono transition-colors ${
+              className={`text-[12px] px-2 py-1 rounded border font-mono transition-colors ${
                 isActive
                   ? "bg-accent/15 border-accent/40 text-foreground"
                   : "bg-surface border-border text-muted hover:text-foreground"
@@ -68,17 +68,17 @@ export default async function Page({
 
       <div className="pb-4 border-b border-border space-y-2">
         <div className="flex items-baseline gap-3 flex-wrap">
-          <span className="text-[11px] text-muted font-mono">
+          <span className="text-[12px] text-muted font-mono">
             {selectedDate}
           </span>
           {selected.frontmatter.generated_by && (
-            <span className="text-[10px] text-muted/80 px-1.5 py-0.5 rounded bg-surface-2">
+            <span className="text-[11px] text-muted/80 px-1.5 py-0.5 rounded bg-surface-2">
               {selected.frontmatter.generated_by}
             </span>
           )}
           <a
             href={buildObsidianUri(selected.relativePath)}
-            className="ml-auto text-[11px] text-muted hover:text-foreground"
+            className="ml-auto text-[12px] text-muted hover:text-foreground"
           >
             Edit in Obsidian ↗
           </a>
@@ -88,7 +88,7 @@ export default async function Page({
             {topics.map((t) => (
               <span
                 key={t}
-                className="text-[10px] text-muted/80 px-1.5 py-0.5 rounded bg-surface-2"
+                className="text-[11px] text-muted/80 px-1.5 py-0.5 rounded bg-surface-2"
               >
                 #{t}
               </span>

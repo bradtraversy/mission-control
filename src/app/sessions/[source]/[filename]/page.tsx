@@ -58,7 +58,7 @@ export default async function Page({
     <div className="p-6 space-y-5 max-w-3xl">
       <Link
         href="/sessions"
-        className="text-[11px] text-muted hover:text-foreground"
+        className="text-[12px] text-muted hover:text-foreground"
       >
         ← Back to sessions
       </Link>
@@ -66,24 +66,24 @@ export default async function Page({
       <header className="space-y-3 pb-4 border-b border-border">
         <div className="flex items-center gap-2 flex-wrap">
           <span
-            className={`text-[10px] px-1.5 py-0.5 rounded ${SOURCE_STYLE[source]}`}
+            className={`text-[11px] px-1.5 py-0.5 rounded ${SOURCE_STYLE[source]}`}
           >
             {SOURCE_LABEL[source]}
           </span>
           {date && (
-            <span className="text-[11px] text-muted font-mono">
+            <span className="text-[12px] text-muted font-mono">
               {date}
               {frontmatter.time ? ` · ${frontmatter.time}` : ""}
             </span>
           )}
           {frontmatter.tool && (
-            <span className="text-[10px] text-muted/80 px-1.5 py-0.5 rounded bg-surface-2">
+            <span className="text-[11px] text-muted/80 px-1.5 py-0.5 rounded bg-surface-2">
               {frontmatter.tool}
             </span>
           )}
           <a
             href={obsidianUri}
-            className="ml-auto text-[11px] text-muted hover:text-foreground"
+            className="ml-auto text-[12px] text-muted hover:text-foreground"
           >
             Edit in Obsidian ↗
           </a>
@@ -100,7 +100,7 @@ export default async function Page({
             {projects.map((p) => (
               <span
                 key={`p-${p}`}
-                className="text-[10px] text-accent px-1.5 py-0.5 rounded bg-accent/10"
+                className="text-[11px] text-accent px-1.5 py-0.5 rounded bg-accent/10"
               >
                 {p}
               </span>
@@ -108,7 +108,7 @@ export default async function Page({
             {topics.map((t) => (
               <span
                 key={`t-${t}`}
-                className="text-[10px] text-muted/80 px-1.5 py-0.5 rounded bg-surface-2"
+                className="text-[11px] text-muted/80 px-1.5 py-0.5 rounded bg-surface-2"
               >
                 #{t}
               </span>
