@@ -171,3 +171,26 @@ export type CurrentStateSnapshot = {
   recentDecisions: string[];
   raw: string;
 };
+
+// YouTube
+export type YoutubeSponsor = {
+  name: string;
+  totalUsd: number | null;
+  paidUsd: number | null;
+  notes: string | null;
+};
+
+export type YoutubeVideo = {
+  folderName: string;
+  archived: boolean;
+  title: string;
+  status: string | null;
+  statusTone: "in-progress" | "paused" | "published";
+  targetPublish: string | null;
+  lastUpdated: string | null;
+  repoUrl: string | null;
+  sponsor: YoutubeSponsor | null;
+  phases: { label: string; done: boolean }[];
+  completedPhases: number;
+  totalPhases: number;
+};
