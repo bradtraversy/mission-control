@@ -17,6 +17,9 @@ export {
   type NetworkCronJob,
   type NetworkConnectivity,
   type NetworkVolume,
+  type NetworkOrphan,
+  type NetworkGhost,
+  type NetworkRegistryDrift,
 } from "./parsers/network";
 export { getCurrentState } from "./parsers/currentState";
 export { getAgents } from "./parsers/agents";
