@@ -2,7 +2,12 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
 import { resolveVaultPath, resolveVaultRelativePath } from "../vault";
-import type { YoutubeVideo, YoutubeSponsor } from "../types";
+import type {
+  YoutubeRecentSnapshot,
+  YoutubeRecentUpload,
+  YoutubeSponsor,
+  YoutubeVideo,
+} from "../types";
 
 const PHASE_LINE_RE = /^- \[([ x])\] (.+?)\s*$/gm;
 
@@ -123,4 +128,45 @@ export async function getYoutubeVideos(
 
   const all = await Promise.all([...activeFolders, ...archivedFolders]);
   return all.filter((v): v is YoutubeVideo => v !== null);
+}
+
+export async function getYoutubeRecent(): Promise<YoutubeRecentSnapshot> {
+  const filePath = resolveVaultRelativePath("Network/data/youtube-recent.json");
+  let raw: string;
+  try {
+    raw = await fs.readFile(filePath, "utf-8");
+  } catch {
+    return { generatedAt: null, count: 0, videos: [] };
+  }
+  let data: unknown;
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    return { generatedAt: null, count: 0, videos: [] };
+  }
+  if (!data || typeof data !== "object") {
+    return { generatedAt: null, count: 0, videos: [] };
+  }
+  const obj = data as Record<string, unknown>;
+  const items = Array.isArray(obj.videos) ? (obj.videos as Record<string, unknown>[]) : [];
+  const videos: YoutubeRecentUpload[] = items.flatMap((v) => {
+    const videoId = coerceString(v.video_id);
+    if (!videoId) return [];
+    return [{
+      videoId,
+      title: coerceString(v.title) ?? "(untitled)",
+      publishedAt: coerceString(v.published_at),
+      thumbnailUrl: coerceString(v.thumbnail_url),
+      durationSeconds: coerceNumber(v.duration_seconds),
+      viewCount: coerceNumber(v.view_count),
+      likeCount: coerceNumber(v.like_count),
+      commentCount: coerceNumber(v.comment_count),
+      url: coerceString(v.url) ?? `https://www.youtube.com/watch?v=${videoId}`,
+    }];
+  });
+  return {
+    generatedAt: coerceString(obj.generated_at),
+    count: videos.length,
+    videos,
+  };
 }
