@@ -103,13 +103,13 @@ function Tile({
 }) {
   return (
     <div className="rounded-lg border border-border bg-surface/40 p-3 flex flex-col gap-1">
-      <span className="text-[11px] font-medium tracking-[0.15em] uppercase text-muted">
+      <span className="text-[12px] font-medium tracking-[0.15em] uppercase text-muted">
         {label}
       </span>
-      <span className="text-lg font-semibold tracking-tight text-foreground">
+      <span className="text-xl font-semibold tracking-tight text-foreground">
         {value}
       </span>
-      {sub && <span className="text-[12px] text-muted truncate">{sub}</span>}
+      {sub && <span className="text-[13px] text-muted truncate">{sub}</span>}
     </div>
   );
 }

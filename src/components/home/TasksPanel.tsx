@@ -28,7 +28,7 @@ export function TasksPanel({ tasks }: Props) {
         action={
           <Link
             href="/tasks"
-            className="text-[12px] text-muted hover:text-foreground"
+            className="text-[13px] text-muted hover:text-foreground"
           >
             View →
           </Link>
@@ -36,7 +36,7 @@ export function TasksPanel({ tasks }: Props) {
       />
       <CardBody className="space-y-2">
         {tasks.length === 0 ? (
-          <p className="text-sm text-muted">
+          <p className="text-base text-muted">
             No queued or in-progress tasks. Ping Travis or drop a new task in
             the Tasks tab.
           </p>
@@ -44,11 +44,11 @@ export function TasksPanel({ tasks }: Props) {
           tasks.map((t) => (
             <div key={t.relativePath} className="space-y-0.5">
               <div className="flex items-baseline justify-between gap-2">
-                <span className="text-sm text-foreground truncate flex-1">
+                <span className="text-base text-foreground truncate flex-1">
                   {t.title}
                 </span>
                 <span
-                  className={`text-[11px] uppercase tracking-wider shrink-0 ${
+                  className={`text-[12px] uppercase tracking-wider shrink-0 ${
                     STATUS_STYLE[t.status] ?? "text-muted"
                   }`}
                 >
@@ -57,18 +57,18 @@ export function TasksPanel({ tasks }: Props) {
               </div>
               <div className="flex items-center gap-2">
                 <span
-                  className={`text-[11px] px-1.5 py-0.5 rounded ${
+                  className={`text-[12px] px-1.5 py-0.5 rounded ${
                     AGENT_STYLE[t.agent] ?? AGENT_STYLE.brad
                   }`}
                 >
                   {t.agent}
                 </span>
                 {t.refTodo && (
-                  <span className="text-[11px] text-muted/70">
+                  <span className="text-[12px] text-muted/70">
                     ref {t.refTodo.column[0].toUpperCase() + t.refTodo.column.slice(1)}#{t.refTodo.id}
                   </span>
                 )}
-                <span className="text-[11px] text-muted ml-auto">
+                <span className="text-[12px] text-muted ml-auto">
                   {formatRelativeTime(t.created)}
                 </span>
               </div>

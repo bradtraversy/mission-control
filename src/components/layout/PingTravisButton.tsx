@@ -33,7 +33,7 @@ export function PingTravisButton() {
       type="button"
       onClick={ping}
       disabled={isPending}
-      className="flex items-center gap-1.5 h-8 px-2.5 rounded-md text-xs text-muted hover:text-foreground hover:bg-surface transition-colors disabled:cursor-wait"
+      className="flex items-center gap-1.5 h-8 px-2.5 rounded-md text-sm text-muted hover:text-foreground hover:bg-surface transition-colors disabled:cursor-wait"
     >
       <Zap size={13} strokeWidth={1.75} />
       Ping Travis

@@ -36,7 +36,7 @@ export function PauseToggle({ paused }: { paused: boolean }) {
       disabled={isPending}
       aria-pressed={paused}
       title={paused ? "Agents paused — click to resume" : "Click to pause agents"}
-      className={`flex items-center gap-1.5 h-8 px-2.5 rounded-md text-xs transition-colors disabled:cursor-wait ${
+      className={`flex items-center gap-1.5 h-8 px-2.5 rounded-md text-sm transition-colors disabled:cursor-wait ${
         paused
           ? "bg-amber-400/15 text-amber-200 hover:bg-amber-400/20"
           : "text-muted hover:text-foreground hover:bg-surface"
