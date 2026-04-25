@@ -50,6 +50,33 @@ export type NetworkCronJob = {
   lastStatus: string | null;
 };
 
+export type NetworkOrphan = {
+  taskId: string;
+  description: string | null;
+  scheduleHuman: string | null;
+  cronExpression: string | null;
+  enabled: boolean;
+  lastRun: string | null;
+  nextRun: string | null;
+  detectedAt: string | null;
+};
+
+export type NetworkGhost = {
+  registryId: string;
+  mcpTaskId: string;
+  name: string | null;
+  owner: string | null;
+  scheduleHuman: string | null;
+  detectedAt: string | null;
+};
+
+export type NetworkRegistryDrift = {
+  snapshotGeneratedAt: string | null;
+  unavailableReason: string | null;
+  orphans: NetworkOrphan[];
+  ghosts: NetworkGhost[];
+};
+
 export type NetworkSnapshot = {
   connectivity: NetworkConnectivity;
   machines: NetworkMachine[];
@@ -57,6 +84,7 @@ export type NetworkSnapshot = {
   automationsUpdatedAt: string | null;
   crons: NetworkCronJob[];
   cronsUpdatedAt: string | null;
+  registryDrift: NetworkRegistryDrift;
   lastUpdated: string | null;
 };
 
@@ -128,6 +156,28 @@ export async function getNetworkSnapshot(): Promise<NetworkSnapshot> {
           traffic_light?: string;
           stale?: boolean;
         }>;
+        registry_drift?: {
+          snapshot_generated_at?: string | null;
+          unavailable_reason?: string | null;
+          orphans?: Array<{
+            task_id?: string;
+            description?: string;
+            schedule_human?: string;
+            cron_expression?: string | null;
+            enabled?: boolean;
+            last_run?: string | null;
+            next_run?: string | null;
+            detected_at?: string;
+          }>;
+          ghosts?: Array<{
+            registry_id?: string;
+            mcp_task_id?: string;
+            name?: string;
+            owner?: string;
+            schedule_human?: string;
+            detected_at?: string;
+          }>;
+        };
       }>("Network/data/automations-health.json"),
       readJson<{
         last_updated?: string;
@@ -208,6 +258,32 @@ export async function getNetworkSnapshot(): Promise<NetworkSnapshot> {
     }
   }
 
+  const driftRaw = automationsRaw?.registry_drift;
+  const orphans: NetworkOrphan[] = (driftRaw?.orphans ?? []).map((o) => ({
+    taskId: o.task_id ?? "",
+    description: o.description ?? null,
+    scheduleHuman: o.schedule_human ?? null,
+    cronExpression: o.cron_expression ?? null,
+    enabled: Boolean(o.enabled),
+    lastRun: o.last_run ?? null,
+    nextRun: o.next_run ?? null,
+    detectedAt: o.detected_at ?? null,
+  }));
+  const ghosts: NetworkGhost[] = (driftRaw?.ghosts ?? []).map((g) => ({
+    registryId: g.registry_id ?? "",
+    mcpTaskId: g.mcp_task_id ?? "",
+    name: g.name ?? null,
+    owner: g.owner ?? null,
+    scheduleHuman: g.schedule_human ?? null,
+    detectedAt: g.detected_at ?? null,
+  }));
+  const registryDrift: NetworkRegistryDrift = {
+    snapshotGeneratedAt: driftRaw?.snapshot_generated_at ?? null,
+    unavailableReason: driftRaw?.unavailable_reason ?? null,
+    orphans,
+    ghosts,
+  };
+
   return {
     connectivity: {
       lastChecked: connectivityRaw?.last_checked ?? null,
@@ -220,6 +296,7 @@ export async function getNetworkSnapshot(): Promise<NetworkSnapshot> {
     automationsUpdatedAt: automationsRaw?.generated_at ?? null,
     crons,
     cronsUpdatedAt: cronsRaw?.last_updated ?? null,
+    registryDrift,
     lastUpdated: diskRaw?.last_updated ?? null,
   };
 }
