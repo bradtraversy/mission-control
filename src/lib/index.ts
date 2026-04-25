@@ -20,6 +20,7 @@ export {
 } from "./parsers/network";
 export { getCurrentState } from "./parsers/currentState";
 export { getAgents } from "./parsers/agents";
+export { getYoutubeVideos } from "./parsers/youtube";
 export { getSponsors, type SponsorDeadline } from "./parsers/sponsors";
 export {
   getServiceHealth,
