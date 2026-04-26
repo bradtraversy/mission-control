@@ -1,14 +1,10 @@
 import {
-  BookOpen,
   Bot,
-  Brain,
   Calendar,
   DollarSign,
-  FileText,
   Folders,
   History,
   Home,
-  Inbox,
   ListChecks,
   ListTodo,
   Network,
@@ -30,10 +26,6 @@ const TABS = [
   { href: "/calendar", label: "Calendar", icon: Calendar },
   { href: "/network", label: "Network", icon: Network },
   { href: "/agents", label: "Agents", icon: Bot },
-  { href: "/docs", label: "Docs", icon: FileText },
-  { href: "/memory", label: "Memory", icon: Brain },
-  { href: "/guides", label: "Guides", icon: BookOpen },
-  { href: "/inbox", label: "Inbox", icon: Inbox },
   { href: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
