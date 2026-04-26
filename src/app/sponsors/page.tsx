@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { Card, CardBody } from "@/components/ui/Card";
-import { buildObsidianUri, getSponsorBrands } from "@/lib";
+import { RevenueChart } from "@/components/sponsors/RevenueChart";
+import {
+  aggregateMonthlyRevenue,
+  buildObsidianUri,
+  getSponsorBrands,
+} from "@/lib";
 import type {
   SponsorBrand,
   SponsorDeal,
@@ -28,6 +33,7 @@ function formatUsd(n: number): string {
 
 export default async function Page() {
   const { brands, totals } = await getSponsorBrands();
+  const monthly = aggregateMonthlyRevenue(brands, 12);
 
   return (
     <div className="p-6 space-y-6">
@@ -51,6 +57,7 @@ export default async function Page() {
       ) : (
         <>
           <TotalsBar totals={totals} brandCount={brands.length} />
+          <RevenueChart data={monthly} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {brands.map((b) => (
               <SponsorCard key={b.slug} brand={b} />

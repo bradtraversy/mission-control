@@ -28,6 +28,7 @@ export {
   getSponsors,
   getSponsorBrands,
   getSponsorBrand,
+  aggregateMonthlyRevenue,
   type SponsorDeadline,
   type SponsorBrand,
   type SponsorBrandsSnapshot,
@@ -36,6 +37,7 @@ export {
   type SponsorEmail,
   type SponsorPayment,
   type SponsorStatus,
+  type MonthlyRevenue,
 } from "./parsers/sponsors";
 export {
   getServiceHealth,
