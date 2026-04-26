@@ -131,6 +131,60 @@ export async function getTasks(
   });
 }
 
+export type TaskThroughput = {
+  agent: TaskAgent;
+  days: number[];
+  total: number;
+  todayCount: number;
+};
+
+// Bucket completed tasks (status === "done") by day per agent over a rolling
+// window ending at `anchor`. Returns one entry per agent that has any done
+// tasks in the window, plus zero-filled day arrays so the sparkline shows
+// cadence rather than just non-zero days.
+export function aggregateTaskThroughput(
+  tasks: Task[],
+  windowDays: number = 7,
+  anchor: Date = new Date(),
+): TaskThroughput[] {
+  const dayKeys: string[] = [];
+  for (let i = windowDays - 1; i >= 0; i--) {
+    const d = new Date(
+      anchor.getFullYear(),
+      anchor.getMonth(),
+      anchor.getDate() - i,
+    );
+    dayKeys.push(
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
+    );
+  }
+  const todayKey = dayKeys[dayKeys.length - 1];
+  const dayIndex = new Map(dayKeys.map((k, i) => [k, i]));
+
+  const byAgent = new Map<TaskAgent, number[]>();
+  for (const t of tasks) {
+    if (t.status !== "done" || !t.created) continue;
+    const d = t.created;
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const idx = dayIndex.get(key);
+    if (idx === undefined) continue;
+    if (!byAgent.has(t.agent)) {
+      byAgent.set(t.agent, new Array(windowDays).fill(0));
+    }
+    const row = byAgent.get(t.agent)!;
+    row[idx] += 1;
+  }
+
+  const result: TaskThroughput[] = [];
+  for (const [agent, days] of byAgent.entries()) {
+    const total = days.reduce((s, n) => s + n, 0);
+    const todayCount = days[dayIndex.get(todayKey) ?? days.length - 1] ?? 0;
+    result.push({ agent, days, total, todayCount });
+  }
+  result.sort((a, b) => b.total - a.total);
+  return result;
+}
+
 export async function getTaskControl(): Promise<TaskControl> {
   const controlPath = resolveVaultRelativePath("Tasks/_control.json");
   try {

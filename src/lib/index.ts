@@ -2,7 +2,12 @@ export * from "./types";
 export * from "./vault";
 export * from "./format";
 export { getTodos } from "./parsers/todos";
-export { getTasks, getTaskControl } from "./parsers/tasks";
+export {
+  getTasks,
+  getTaskControl,
+  aggregateTaskThroughput,
+  type TaskThroughput,
+} from "./parsers/tasks";
 export { getProjects } from "./parsers/projects";
 export { getSessions } from "./parsers/sessions";
 export { getDigests } from "./parsers/digests";
