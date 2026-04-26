@@ -24,7 +24,17 @@ export {
 export { getCurrentState } from "./parsers/currentState";
 export { getAgents } from "./parsers/agents";
 export { getYoutubeVideos, getYoutubeRecent } from "./parsers/youtube";
-export { getSponsors, type SponsorDeadline } from "./parsers/sponsors";
+export {
+  getSponsors,
+  getSponsorBrands,
+  type SponsorDeadline,
+  type SponsorBrand,
+  type SponsorBrandsSnapshot,
+  type SponsorContact,
+  type SponsorDeal,
+  type SponsorPayment,
+  type SponsorStatus,
+} from "./parsers/sponsors";
 export {
   getServiceHealth,
   getAutomationHealth,
