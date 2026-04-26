@@ -11,7 +11,6 @@ export {
 export { getProjects } from "./parsers/projects";
 export { getSessions } from "./parsers/sessions";
 export { getDigests } from "./parsers/digests";
-export { getMemory } from "./parsers/memory";
 export { getNetworkFeeds } from "./parsers/networkFeeds";
 export { getCalendarSnapshot } from "./parsers/calendar";
 export {

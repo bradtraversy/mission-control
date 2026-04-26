@@ -125,9 +125,6 @@ export type CalendarSnapshot = {
   exists: boolean;
 };
 
-// Memory
-export type MemoryEntry = ParsedMarkdown;
-
 // Network feeds
 export type NetworkFeed = {
   filename: string;

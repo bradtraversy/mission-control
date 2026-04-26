@@ -12,7 +12,6 @@ import {
   getProjects,
   getSessions,
   getDigests,
-  getMemory,
   getNetworkFeeds,
   getCurrentState,
   getSponsors,
@@ -67,10 +66,6 @@ async function main(): Promise<void> {
   for (const d of digests) {
     console.log(`  ${d.frontmatter.date ?? "????"} · ${d.relativePath}`);
   }
-
-  heading("MEMORY (latest 3)");
-  const memory = await getMemory({ limit: 3 });
-  for (const m of memory) console.log(`  ${m.relativePath}`);
 
   heading("NETWORK FEEDS");
   const feeds = await getNetworkFeeds();
