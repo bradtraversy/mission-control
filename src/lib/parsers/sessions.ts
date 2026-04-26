@@ -3,20 +3,37 @@ import type { Session, SessionFrontmatter, SessionSource } from "../types";
 
 const FILENAME_RE = /^(\d{4}-\d{2}-\d{2})(?:-(.+))?\.md$/;
 const HEADING_RE = /^#{1,3}\s+(.+?)\s*$/m;
+const H2_RE = /^##\s+(.+?)\s*$/gm;
+const TIME_PREFIX_RE = /^\d{1,2}:\d{2}\s*[—\-–:]\s*/;
+const MAX_TOPICS = 3;
+
+function cleanHeading(text: string, date: string | null): string {
+  let result = text
+    .replace(/^Session\s+/i, "")
+    .replace(TIME_PREFIX_RE, "")
+    .trim();
+  if (date) result = result.replaceAll(date, "");
+  return result.replace(/^[—\-–:\s]+|[—\-–:\s]+$/g, "").trim();
+}
 
 function deriveTitle(slug: string, body: string, date: string | null): string {
   if (!(date && slug === date)) {
     return slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
   }
   const heading = body.match(HEADING_RE)?.[1]?.trim();
-  if (!heading) return "Daily log";
-  const cleaned = heading
-    .replace(/^Session\s+/i, "")
-    .replaceAll(date, "")
-    .replace(/^[—\-–:\s]+|[—\-–:\s]+$/g, "")
-    .trim();
-  if (!cleaned) return "Daily log";
-  return cleaned;
+  const cleaned = heading ? cleanHeading(heading, date) : "";
+  if (cleaned) return cleaned;
+
+  // Fallback: H1 was just the date (e.g. "# 2026-04-26"). Travis's daily logs
+  // put per-session topics in H2s — join those instead of a generic placeholder.
+  const topics: string[] = [];
+  for (const match of body.matchAll(H2_RE)) {
+    const topic = cleanHeading(match[1], date);
+    if (topic) topics.push(topic);
+  }
+  if (topics.length === 0) return "Daily log";
+  if (topics.length <= MAX_TOPICS) return topics.join(" · ");
+  return `${topics.slice(0, MAX_TOPICS).join(" · ")} · +${topics.length - MAX_TOPICS} more`;
 }
 
 export async function getSessions(
