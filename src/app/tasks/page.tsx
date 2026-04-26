@@ -1,12 +1,24 @@
 import { TasksBoard } from "@/components/tasks/TasksBoard";
-import { buildObsidianUri, getTaskControl, getTasks } from "@/lib";
+import { TaskThroughputSparklines } from "@/components/tasks/TaskThroughputSparklines";
+import {
+  aggregateTaskThroughput,
+  buildObsidianUri,
+  getTaskControl,
+  getTasks,
+} from "@/lib";
+
+const WINDOW_DAYS = 7;
 
 export default async function Page() {
-  const [tasks, control] = await Promise.all([getTasks(), getTaskControl()]);
+  const [tasks, control] = await Promise.all([
+    getTasks({ includeArchived: true }),
+    getTaskControl(),
+  ]);
   const taskUris = Object.fromEntries(
     tasks.map((t) => [t.relativePath, buildObsidianUri(t.relativePath)]),
   );
   const active = tasks.filter((t) => !t.archived);
+  const throughput = aggregateTaskThroughput(tasks, WINDOW_DAYS);
 
   return (
     <div className="p-6 space-y-5">
@@ -19,7 +31,8 @@ export default async function Page() {
         </p>
       </header>
       {control.paused && <PausedBanner />}
-      <TasksBoard tasks={tasks} taskUris={taskUris} />
+      <TaskThroughputSparklines rows={throughput} windowDays={WINDOW_DAYS} />
+      <TasksBoard tasks={active} taskUris={taskUris} />
     </div>
   );
 }
