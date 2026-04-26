@@ -13,7 +13,6 @@ import type {
 const STATUSES: ReadonlySet<TaskStatus> = new Set(["queued", "claimed", "done"]);
 const AGENTS: ReadonlySet<TaskAgent> = new Set([
   "travis",
-  "scout",
   "claude-code",
   "claude-cowork",
   "brad",
