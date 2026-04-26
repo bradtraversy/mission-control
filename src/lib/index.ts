@@ -27,11 +27,13 @@ export { getYoutubeVideos, getYoutubeRecent } from "./parsers/youtube";
 export {
   getSponsors,
   getSponsorBrands,
+  getSponsorBrand,
   type SponsorDeadline,
   type SponsorBrand,
   type SponsorBrandsSnapshot,
   type SponsorContact,
   type SponsorDeal,
+  type SponsorEmail,
   type SponsorPayment,
   type SponsorStatus,
 } from "./parsers/sponsors";

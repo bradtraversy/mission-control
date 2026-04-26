@@ -18,7 +18,7 @@ export default async function Page() {
         <div className="lg:col-span-2">
           <ThisWeekPanel items={data.thisWeek} />
         </div>
-        <SponsorDeadlinesPanel sponsors={data.sponsors} />
+        <SponsorDeadlinesPanel brands={data.sponsorBrands} />
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">

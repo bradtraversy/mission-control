@@ -4,7 +4,7 @@ import {
   getDigests,
   getServiceHealth,
   getSessions,
-  getSponsors,
+  getSponsorBrands,
   getTasks,
   getTodos,
 } from "@/lib";
@@ -15,7 +15,7 @@ export async function fetchHomeData() {
     tasks,
     sessions,
     digests,
-    sponsors,
+    sponsorSnapshot,
     currentState,
     serviceHealth,
     automationHealth,
@@ -24,17 +24,21 @@ export async function fetchHomeData() {
     getTasks(),
     getSessions({ limit: 5 }),
     getDigests({ limit: 1 }),
-    getSponsors(),
+    getSponsorBrands(),
     getCurrentState(),
     getServiceHealth(),
     getAutomationHealth(),
   ]);
 
-  const totalSponsorOutstanding = sponsors.reduce(
-    (sum, row) => sum + row.outstandingUsd,
-    0,
-  );
-  const firstActiveSponsor = sponsors.find((s) => !s.isDone);
+  const { brands: sponsorBrands, totals: sponsorTotals } = sponsorSnapshot;
+  const firstActiveDeal = sponsorBrands
+    .flatMap((b) => b.activeDeals.map((d) => ({ brand: b, deal: d })))
+    .map((row) => {
+      const m = row.deal.detail.match(/(\d{4}-\d{2}-\d{2})/);
+      return { ...row, due: m ? m[1] : null };
+    })
+    .filter((row) => row.due)
+    .sort((a, b) => (a.due ?? "").localeCompare(b.due ?? ""))[0];
 
   const queued = tasks.filter((t) => t.status === "queued");
   const claimed = tasks.filter((t) => t.status === "claimed");
@@ -50,15 +54,15 @@ export async function fetchHomeData() {
       },
       todosOpen: todos.now.filter((t) => !t.done).length,
       todosTotal: todos.now.length,
-      sponsorOutstanding: totalSponsorOutstanding,
-      nextSponsorDue: firstActiveSponsor?.due ?? null,
+      sponsorOutstanding: sponsorTotals.outstandingUsd,
+      nextSponsorDue: firstActiveDeal?.due ?? null,
       serviceHealth,
       automationHealth,
       latestDigest: digests[0] ?? null,
       lastSession: sessions[0] ?? null,
     },
     thisWeek: currentState.thisWeek,
-    sponsors,
+    sponsorBrands,
     todosNow: todos.now,
     activeTasks,
     recentSessions: sessions,

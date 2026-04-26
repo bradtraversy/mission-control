@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Card, CardBody } from "@/components/ui/Card";
 import { buildObsidianUri, getSponsorBrands } from "@/lib";
 import type {
@@ -117,12 +118,15 @@ function SponsorCard({ brand }: { brand: SponsorBrand }) {
   const obsidianUri = buildObsidianUri(brand.filePath);
   const recentPayments = brand.payments.slice(0, 3);
   return (
-    <Card>
+    <Card className="hover:border-accent/40 transition-colors">
       <CardBody className="space-y-3 pt-4">
         <div className="flex items-start justify-between gap-2">
-          <h2 className="text-base font-medium text-foreground leading-snug min-w-0">
+          <Link
+            href={`/sponsors/${brand.slug}`}
+            className="text-base font-medium text-foreground leading-snug min-w-0 hover:text-accent transition-colors"
+          >
             {brand.name}
-          </h2>
+          </Link>
           <span
             className={`text-[12px] px-1.5 py-0.5 rounded shrink-0 ${STATUS_STYLE[brand.status]}`}
           >
@@ -182,7 +186,13 @@ function SponsorCard({ brand }: { brand: SponsorBrand }) {
           <PaymentTable payments={recentPayments} totalCount={brand.payments.length} />
         )}
 
-        <div className="flex items-center justify-end pt-1">
+        <div className="flex items-center justify-between pt-1">
+          <Link
+            href={`/sponsors/${brand.slug}`}
+            className="text-muted hover:text-foreground text-[12px]"
+          >
+            Details →
+          </Link>
           <a
             href={obsidianUri}
             className="text-muted hover:text-foreground text-[12px]"

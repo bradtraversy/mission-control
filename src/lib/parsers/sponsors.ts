@@ -42,6 +42,13 @@ export type SponsorContact = {
   source: string | null;
 };
 
+export type SponsorEmail = {
+  date: string;
+  fromTo: string;
+  subject: string;
+  summary: string;
+};
+
 export type SponsorBrand = {
   name: string;
   slug: string;
@@ -52,6 +59,8 @@ export type SponsorBrand = {
   activeDeals: SponsorDeal[];
   pastDeals: SponsorDeal[];
   payments: SponsorPayment[];
+  emailLog: SponsorEmail[];
+  notes: string | null;
   totals: {
     committedUsd: number;
     paidUsd: number;
@@ -189,6 +198,39 @@ function parseDealsSection(body: string, heading: string): SponsorDeal[] {
   return deals;
 }
 
+function parseEmailLog(body: string): SponsorEmail[] {
+  const section = sectionBody(body, "Email log");
+  if (!section) return [];
+  const rows: SponsorEmail[] = [];
+  for (const line of section.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("|")) continue;
+    if (/^\|[\s\-|]+\|$/.test(trimmed)) continue;
+    if (/^\|\s*Date\s*\|/i.test(trimmed)) continue;
+    const cells = trimmed
+      .split("|")
+      .map((c) => c.trim())
+      .slice(1, -1);
+    if (cells.length < 4) continue;
+    const [date, fromTo, subject, summary] = cells;
+    if (/^_no entries yet/i.test(date) || /Dennis-owned/i.test(date)) continue;
+    rows.push({
+      date: cleanCell(date),
+      fromTo: cleanCell(fromTo),
+      subject: cleanCell(subject),
+      summary: cleanCell(summary),
+    });
+  }
+  return rows;
+}
+
+function parseNotes(body: string): string | null {
+  const section = sectionBody(body, "Notes");
+  if (!section) return null;
+  const trimmed = section.trim();
+  return trimmed ? trimmed : null;
+}
+
 function parsePaymentLog(body: string): SponsorPayment[] {
   const section = sectionBody(body, "Payment log");
   if (!section) return [];
@@ -251,6 +293,8 @@ export async function getSponsorBrands(): Promise<SponsorBrandsSnapshot> {
     const activeDeals = parseDealsSection(file.body, "Active deals");
     const pastDeals = parseDealsSection(file.body, "Past deals");
     const payments = parsePaymentLog(file.body);
+    const emailLog = parseEmailLog(file.body);
+    const notes = parseNotes(file.body);
 
     const dealCommitted = activeDeals
       .concat(pastDeals)
@@ -279,6 +323,8 @@ export async function getSponsorBrands(): Promise<SponsorBrandsSnapshot> {
       activeDeals,
       pastDeals,
       payments,
+      emailLog,
+      notes,
       totals: { committedUsd, paidUsd, outstandingUsd },
     });
   }
@@ -300,4 +346,9 @@ export async function getSponsorBrands(): Promise<SponsorBrandsSnapshot> {
     { committedUsd: 0, paidUsd: 0, outstandingUsd: 0 },
   );
   return { brands, totals };
+}
+
+export async function getSponsorBrand(slug: string): Promise<SponsorBrand | null> {
+  const { brands } = await getSponsorBrands();
+  return brands.find((b) => b.slug === slug) ?? null;
 }
