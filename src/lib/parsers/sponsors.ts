@@ -77,6 +77,11 @@ export type SponsorBrandsSnapshot = {
   };
 };
 
+export type MonthlyRevenue = {
+  month: string;
+  paidUsd: number;
+};
+
 function cleanCell(cell: string): string {
   return stripMarkdownBold(cell.trim()).trim();
 }
@@ -351,4 +356,37 @@ export async function getSponsorBrands(): Promise<SponsorBrandsSnapshot> {
 export async function getSponsorBrand(slug: string): Promise<SponsorBrand | null> {
   const { brands } = await getSponsorBrands();
   return brands.find((b) => b.slug === slug) ?? null;
+}
+
+const ISO_MONTH_RE = /^(\d{4})-(\d{2})/;
+
+// Aggregate verified payments across all brands into a rolling N-month series
+// ending at the given anchor (defaults to today). Returns N entries oldest→newest,
+// with $0 for months that had no payments — important so the chart shows cadence
+// gaps, not just non-zero months.
+export function aggregateMonthlyRevenue(
+  brands: SponsorBrand[],
+  monthCount: number = 12,
+  anchor: Date = new Date(),
+): MonthlyRevenue[] {
+  const buckets = new Map<string, number>();
+  for (let i = monthCount - 1; i >= 0; i--) {
+    const d = new Date(anchor.getFullYear(), anchor.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    buckets.set(key, 0);
+  }
+  for (const brand of brands) {
+    for (const p of brand.payments) {
+      if (!p.verified || p.amount == null) continue;
+      const m = p.date.match(ISO_MONTH_RE);
+      if (!m) continue;
+      const key = `${m[1]}-${m[2]}`;
+      if (!buckets.has(key)) continue;
+      buckets.set(key, (buckets.get(key) ?? 0) + p.amount);
+    }
+  }
+  return Array.from(buckets.entries()).map(([month, paidUsd]) => ({
+    month,
+    paidUsd,
+  }));
 }
