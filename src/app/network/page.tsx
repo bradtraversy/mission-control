@@ -2,7 +2,6 @@ import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { formatRelativeTime, getNetworkSnapshot } from "@/lib";
 import type {
   NetworkAutomation,
-  NetworkCronJob,
   NetworkGhost,
   NetworkMachine,
   NetworkOrphan,
@@ -44,11 +43,6 @@ function usageColor(percent: number): string {
   return "bg-emerald-400/70";
 }
 
-function formatTimestamp(ms: number | null): string {
-  if (!ms) return "—";
-  return formatRelativeTime(new Date(ms));
-}
-
 function formatIso(value: string | null): string {
   if (!value) return "—";
   const date = new Date(value);
@@ -58,8 +52,7 @@ function formatIso(value: string | null): string {
 
 export default async function Page() {
   const snapshot = await getNetworkSnapshot();
-  const { connectivity, machines, automations, crons, registryDrift } =
-    snapshot;
+  const { connectivity, machines, automations, registryDrift } = snapshot;
 
   const onlineCount = machines.filter((m) => m.online && !m.stale).length;
   const overallStatus: "ok" | "warn" | "down" =
@@ -116,16 +109,6 @@ export default async function Page() {
         />
         <CardBody>
           <AutomationsTable rows={automations} />
-        </CardBody>
-      </Card>
-
-      <Card>
-        <CardHeader
-          title="Cron Jobs"
-          meta={`${crons.length} jobs · updated ${formatIso(snapshot.cronsUpdatedAt)}`}
-        />
-        <CardBody>
-          <CronsTable rows={crons} />
         </CardBody>
       </Card>
     </div>
@@ -207,6 +190,16 @@ function MachineCard({ machine }: { machine: NetworkMachine }) {
   );
 }
 
+function automationStatusLabel(a: NetworkAutomation): string {
+  // When systemd reports `ok` but no heartbeat has landed, the row is stale and
+  // the amber color tells the truth — but the literal "ok" text in the pill
+  // reads as healthy. Override with "stale" so the word matches the color.
+  if (a.stale && (a.lastStatus === "ok" || a.lastStatus === null)) {
+    return "stale";
+  }
+  return a.lastStatus ?? a.trafficLight;
+}
+
 function AutomationsTable({ rows }: { rows: NetworkAutomation[] }) {
   if (rows.length === 0) {
     return (
@@ -236,7 +229,7 @@ function AutomationsTable({ rows }: { rows: NetworkAutomation[] }) {
                 <span
                   className={`text-[12px] px-1.5 py-0.5 rounded ${LIGHT_STYLE[a.trafficLight]}`}
                 >
-                  {a.lastStatus ?? a.trafficLight}
+                  {automationStatusLabel(a)}
                 </span>
               </td>
               <td className="py-2 pr-3 text-foreground">{a.name}</td>
@@ -439,61 +432,3 @@ function GhostsTable({ rows }: { rows: NetworkGhost[] }) {
   );
 }
 
-function CronsTable({ rows }: { rows: NetworkCronJob[] }) {
-  if (rows.length === 0) {
-    return (
-      <p className="text-[14px] text-muted py-2">
-        No cron jobs reported in <code>cron-jobs.json</code>.
-      </p>
-    );
-  }
-  return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-[14px]">
-        <thead>
-          <tr className="text-left text-[12px] uppercase tracking-wider text-muted/60 border-b border-border">
-            <th className="py-2 pr-3 font-medium">Host</th>
-            <th className="py-2 pr-3 font-medium">Name</th>
-            <th className="py-2 pr-3 font-medium">Schedule</th>
-            <th className="py-2 pr-3 font-medium">Last Ran</th>
-            <th className="py-2 pr-3 font-medium">Next Run</th>
-            <th className="py-2 pr-3 font-medium">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((c, i) => (
-            <tr
-              key={`${c.host}-${c.name}-${i}`}
-              className="border-b border-border/40 last:border-0"
-            >
-              <td className="py-2 pr-3 text-muted font-mono">{c.host}</td>
-              <td className="py-2 pr-3 text-foreground">{c.name}</td>
-              <td className="py-2 pr-3 text-muted">
-                {c.scheduleHuman ?? "—"}
-              </td>
-              <td className="py-2 pr-3 text-muted">
-                {formatTimestamp(c.lastRan)}
-              </td>
-              <td className="py-2 pr-3 text-muted">
-                {formatTimestamp(c.nextRun)}
-              </td>
-              <td className="py-2 pr-3">
-                <span
-                  className={`text-[12px] px-1.5 py-0.5 rounded ${
-                    c.lastStatus === "ok"
-                      ? "bg-emerald-400/15 text-emerald-300"
-                      : c.lastStatus
-                        ? "bg-amber-400/20 text-amber-300"
-                        : "bg-surface-2 text-muted"
-                  }`}
-                >
-                  {c.lastStatus ?? "—"}
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
