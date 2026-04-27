@@ -1,3 +1,4 @@
+import { classifyPaths } from "@/lib/activity";
 import { subscribeVault } from "@/lib/watcher";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +26,10 @@ export async function GET(request: Request) {
 
       const unsubscribe = subscribeVault((change) => {
         send(`event: change\ndata: ${JSON.stringify(change)}\n\n`);
+        const entries = classifyPaths(change.paths, change.at);
+        if (entries.length > 0) {
+          send(`event: activity\ndata: ${JSON.stringify({ entries })}\n\n`);
+        }
       });
 
       const heartbeat = setInterval(() => {
