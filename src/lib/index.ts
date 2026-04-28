@@ -29,6 +29,13 @@ export { getCurrentState } from "./parsers/currentState";
 export { getAgents } from "./parsers/agents";
 export { getYoutubeVideos, getYoutubeRecent } from "./parsers/youtube";
 export {
+  getGithubFeed,
+  type GithubEvent,
+  type GithubEventKind,
+  type GithubRepo,
+  type GithubFeedSnapshot,
+} from "./parsers/github";
+export {
   getSponsors,
   getSponsorBrands,
   getSponsorBrand,
