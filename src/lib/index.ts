@@ -34,6 +34,9 @@ export {
   type GithubEventKind,
   type GithubRepo,
   type GithubFeedSnapshot,
+  type GithubAccountData,
+  type GithubContributionCalendar,
+  type GithubContributionDay,
 } from "./parsers/github";
 export {
   getSponsors,
