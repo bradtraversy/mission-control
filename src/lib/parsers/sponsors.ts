@@ -253,7 +253,9 @@ function parsePaymentLog(body: string): SponsorPayment[] {
     const [date, amount, deal, method, verified, notes] = cells.concat(
       Array(6 - cells.length).fill(""),
     );
-    if (/^\d{4}-XX-XX$/i.test(date)) continue;
+    // Keep placeholder-date rows ("2026-XX-XX") so they're visible for
+    // verification; their amounts are gated out of paid totals by the
+    // `verified` filter elsewhere.
     rows.push({
       date: cleanCell(date),
       amount: parseUsd(amount),

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Card, CardBody } from "@/components/ui/Card";
 import { MarkdownBody } from "@/components/markdown/MarkdownBody";
+import { PaymentVerifyButton } from "@/components/sponsors/PaymentVerifyButton";
 import { buildObsidianUri, getSponsorBrand } from "@/lib";
 import type {
   SponsorBrand,
@@ -92,7 +93,7 @@ export default async function Page({
       )}
 
       {brand.payments.length > 0 && (
-        <PaymentsSection payments={brand.payments} />
+        <PaymentsSection slug={brand.slug} payments={brand.payments} />
       )}
 
       {brand.emailLog.length > 0 && (
@@ -205,7 +206,13 @@ function DealsSection({
   );
 }
 
-function PaymentsSection({ payments }: { payments: SponsorPayment[] }) {
+function PaymentsSection({
+  slug,
+  payments,
+}: {
+  slug: string;
+  payments: SponsorPayment[];
+}) {
   return (
     <section className="space-y-2">
       <h2 className="text-[13px] font-medium tracking-[0.15em] uppercase text-muted">
@@ -239,9 +246,12 @@ function PaymentsSection({ payments }: { payments: SponsorPayment[] }) {
                         ✓
                       </span>
                     ) : (
-                      <span className="text-amber-300" title="unverified">
-                        ?
-                      </span>
+                      <PaymentVerifyButton
+                        slug={slug}
+                        rowIndex={i}
+                        initialDate={p.date}
+                        initialMethod={p.method}
+                      />
                     )}
                   </td>
                   <td className="px-3 py-2 text-muted/70">{p.notes}</td>
