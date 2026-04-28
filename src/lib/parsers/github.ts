@@ -98,6 +98,11 @@ type RawEvent = {
   payload?: Record<string, unknown>;
 };
 
+// Limit enrichment so a single page render can't blow the rate budget. With
+// 10 calls per top-of-feed render and a 60s snapshot cache, that's ~600/hr —
+// well under 5000/hr authenticated.
+const ENRICH_PUSH_LIMIT = 10;
+
 function classifyEvent(raw: RawEvent): GithubEvent | null {
   const repoName = raw.repo?.name ?? "unknown";
   const actor = raw.actor?.login ?? "unknown";
@@ -107,21 +112,31 @@ function classifyEvent(raw: RawEvent): GithubEvent | null {
   switch (raw.type) {
     case "PushEvent": {
       const payload = raw.payload as
-        | { ref?: string; commits?: { message: string; sha: string }[]; size?: number }
+        | {
+            ref?: string;
+            commits?: { message: string; sha: string }[];
+            size?: number | null;
+            head?: string;
+          }
         | undefined;
       const branch = payload?.ref?.replace("refs/heads/", "") ?? "";
       const commits = payload?.commits ?? [];
-      const size = payload?.size ?? commits.length;
-      const head = commits[commits.length - 1];
+      // Fine-grained PATs strip size + commits[] from PushEvent. Fall back to
+      // the head SHA which IS always present, and let an enrichment pass fill
+      // in the commit message later.
+      const headSha = payload?.head ?? commits[commits.length - 1]?.sha ?? null;
+      const inlineMessage = commits[commits.length - 1]?.message?.split("\n")[0] ?? null;
+      const size = payload?.size ?? (commits.length || null);
+      const sizeText = size != null ? `${size} commit${size === 1 ? "" : "s"} to ${branch}` : `Push to ${branch}`;
       return {
         id,
         kind: "push",
         repo: repoName,
         actor,
-        title: `${size} commit${size === 1 ? "" : "s"} to ${branch}`,
-        detail: head?.message?.split("\n")[0] ?? null,
-        url: head
-          ? `https://github.com/${repoName}/commit/${head.sha}`
+        title: sizeText,
+        detail: inlineMessage ?? (headSha ? headSha.slice(0, 7) : null),
+        url: headSha
+          ? `https://github.com/${repoName}/commit/${headSha}`
           : `https://github.com/${repoName}/commits/${branch}`,
         createdAt,
       };
@@ -326,6 +341,38 @@ export async function getGithubFeed(): Promise<GithubFeedSnapshot> {
       }
     }
     events.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+
+    // Enrich the top N push events whose detail is just a short SHA (i.e.
+    // came back without inline commit messages — fine-grained PAT case).
+    // Each fetch is one extra API call but bounded by ENRICH_PUSH_LIMIT.
+    const enrichTargets: { event: GithubEvent; sha: string }[] = [];
+    for (const e of events) {
+      if (enrichTargets.length >= ENRICH_PUSH_LIMIT) break;
+      if (e.kind !== "push") continue;
+      const m = e.url.match(/\/commit\/([0-9a-f]{40})/);
+      if (!m) continue;
+      const isShortSha = e.detail && /^[0-9a-f]{7}$/.test(e.detail);
+      if (!isShortSha) continue;
+      enrichTargets.push({ event: e, sha: m[1] });
+    }
+    if (enrichTargets.length > 0) {
+      const enrichResults = await Promise.allSettled(
+        enrichTargets.map(({ event, sha }) =>
+          ghFetch(`${API}/repos/${event.repo}/commits/${sha}`, token),
+        ),
+      );
+      for (let i = 0; i < enrichResults.length; i++) {
+        const r = enrichResults[i];
+        if (r.status !== "fulfilled") continue;
+        lastRateRemaining = r.value.rateRemaining ?? lastRateRemaining;
+        lastRateReset = r.value.rateReset ?? lastRateReset;
+        const data = r.value.data as
+          | { commit?: { message?: string } }
+          | undefined;
+        const message = data?.commit?.message?.split("\n")[0]?.trim();
+        if (message) enrichTargets[i].event.detail = message;
+      }
+    }
 
     const snapshot: GithubFeedSnapshot = {
       configured: true,
