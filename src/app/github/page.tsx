@@ -1,6 +1,7 @@
 import { Card, CardBody } from "@/components/ui/Card";
+import { AccountSection } from "@/components/github/AccountSection";
 import { getGithubFeed } from "@/lib";
-import type { GithubEvent, GithubEventKind, GithubRepo } from "@/lib";
+import type { GithubEvent, GithubEventKind } from "@/lib";
 
 const KIND_DOT: Record<GithubEventKind, string> = {
   push: "bg-emerald-400",
@@ -32,8 +33,8 @@ const KIND_TONE: Record<GithubEventKind, string> = {
   other: "text-muted",
 };
 
-function formatRelative(iso: string): string {
-  const ms = Date.now() - new Date(iso).getTime();
+function formatRelative(iso: string, now: number): string {
+  const ms = now - new Date(iso).getTime();
   if (Number.isNaN(ms) || ms < 0) return iso;
   const sec = Math.round(ms / 1000);
   if (sec < 60) return `${sec}s ago`;
@@ -47,17 +48,30 @@ function formatRelative(iso: string): string {
   return `${mo}mo ago`;
 }
 
+const ACTIVE_DAYS = 90;
+
 export default async function Page() {
   const snap = await getGithubFeed();
+  const totalRepos = snap.accounts.reduce((sum, a) => sum + a.repos.length, 0);
+  const serverNow = new Date(snap.fetchedAt).getTime();
+  const cutoff = serverNow - ACTIVE_DAYS * 24 * 60 * 60 * 1000;
+  const activeReposByAccount = new Map(
+    snap.accounts.map((acc) => [
+      acc.login,
+      acc.repos.filter((r) =>
+        r.pushedAt ? new Date(r.pushedAt).getTime() >= cutoff : false,
+      ),
+    ]),
+  );
 
   return (
     <div className="p-6 space-y-6">
       <header className="space-y-1">
         <h1 className="text-xl font-medium tracking-tight">GitHub</h1>
         <p className="text-[14px] text-muted">
-          Activity across <code className="text-foreground/80">{snap.org}/</code>{" "}
-          repos · {snap.repos.length}{" "}
-          {snap.repos.length === 1 ? "repo" : "repos"}
+          Activity across {snap.accounts.length}{" "}
+          {snap.accounts.length === 1 ? "account" : "accounts"} ·{" "}
+          {totalRepos} {totalRepos === 1 ? "repo" : "repos"} total
           {snap.rateRemaining !== null && (
             <> · {snap.rateRemaining} API calls left this hour</>
           )}
@@ -70,8 +84,15 @@ export default async function Page() {
       )}
       {snap.configured && !snap.errorMessage && (
         <>
-          <ReposGrid repos={snap.repos} />
-          <EventsFeed events={snap.events} />
+          {snap.accounts.map((acc) => (
+            <AccountSection
+              key={acc.login}
+              account={acc}
+              activeRepos={activeReposByAccount.get(acc.login) ?? []}
+              serverNow={serverNow}
+            />
+          ))}
+          <EventsFeed events={snap.events} now={serverNow} />
         </>
       )}
     </div>
@@ -87,18 +108,10 @@ function NotConfigured() {
         </h2>
         <p className="text-[14px] text-muted leading-relaxed">
           Set <code>GITHUB_TOKEN</code> in <code>.env.local</code> on trav-ai
-          and restart the service. Use a fine-grained PAT scoped to the{" "}
-          <code>travxlabs</code> org with <code>metadata: read</code> +{" "}
-          <code>contents: read</code>. Create one at{" "}
-          <a
-            href="https://github.com/settings/tokens"
-            target="_blank"
-            rel="noreferrer"
-            className="text-accent hover:underline"
-          >
-            github.com/settings/tokens ↗
-          </a>
-          .
+          and restart the service. Use a fine-grained PAT with{" "}
+          <code>metadata: read</code> + <code>contents: read</code> scoped to
+          your accounts. Configure accounts via{" "}
+          <code>GITHUB_ACCOUNTS=user1,user2</code>.
         </p>
       </CardBody>
     </Card>
@@ -115,82 +128,22 @@ function ErrorCard({ message }: { message: string }) {
         <p className="text-[13px] text-muted/80 font-mono break-words">
           {message}
         </p>
-        <p className="text-[12px] text-muted/60">
-          Most common cause: PAT lacks the right scopes, or the org name is
-          wrong. Adjust <code>GITHUB_TOKEN</code> / <code>GITHUB_ORG</code> in{" "}
-          <code>.env.local</code> and restart MC.
-        </p>
       </CardBody>
     </Card>
   );
 }
 
-function ReposGrid({ repos }: { repos: GithubRepo[] }) {
-  if (repos.length === 0) {
-    return (
-      <p className="text-[14px] text-muted/60 italic">
-        No repos returned by the API. Verify the org name and token scopes.
-      </p>
-    );
-  }
+function EventsFeed({ events, now }: { events: GithubEvent[]; now: number }) {
   return (
     <section className="space-y-2">
       <h2 className="text-[13px] font-medium tracking-[0.15em] uppercase text-muted">
-        Repos · sorted by latest push
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {repos.map((r) => (
-          <a
-            key={r.fullName}
-            href={r.url}
-            target="_blank"
-            rel="noreferrer"
-            className="block"
-          >
-            <Card className="hover:border-accent/40 transition-colors">
-              <CardBody className="space-y-1 pt-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-base font-medium text-foreground truncate">
-                    {r.name}
-                  </span>
-                  {r.isPrivate && (
-                    <span className="text-[10px] uppercase tracking-wider px-1 py-0.5 rounded bg-surface-2 text-muted/70">
-                      private
-                    </span>
-                  )}
-                </div>
-                {r.description && (
-                  <p className="text-[13px] text-muted leading-snug line-clamp-2">
-                    {r.description}
-                  </p>
-                )}
-                {r.pushedAt && (
-                  <p className="text-[12px] text-muted/60 font-mono">
-                    pushed {formatRelative(r.pushedAt)}
-                  </p>
-                )}
-              </CardBody>
-            </Card>
-          </a>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function EventsFeed({ events }: { events: GithubEvent[] }) {
-  return (
-    <section className="space-y-2">
-      <h2 className="text-[13px] font-medium tracking-[0.15em] uppercase text-muted">
-        Activity feed
+        Activity feed · all accounts
       </h2>
       {events.length === 0 ? (
         <Card>
           <CardBody>
             <p className="text-[14px] text-muted/60 italic">
-              No recent events from the top repos. The Events API only goes
-              back ~90 days and respects exclusions; nothing here means nothing
-              new.
+              No recent events. The Events API only goes back ~90 days.
             </p>
           </CardBody>
         </Card>
@@ -199,7 +152,7 @@ function EventsFeed({ events }: { events: GithubEvent[] }) {
           <CardBody className="!p-0">
             <ul className="divide-y divide-border/40">
               {events.map((e) => (
-                <EventRow key={e.id} event={e} />
+                <EventRow key={e.id} event={e} now={now} />
               ))}
             </ul>
           </CardBody>
@@ -209,7 +162,7 @@ function EventsFeed({ events }: { events: GithubEvent[] }) {
   );
 }
 
-function EventRow({ event }: { event: GithubEvent }) {
+function EventRow({ event, now }: { event: GithubEvent; now: number }) {
   const repoShort = event.repo.split("/").pop() ?? event.repo;
   return (
     <li>
@@ -229,11 +182,13 @@ function EventRow({ event }: { event: GithubEvent }) {
               {event.title}
             </span>
             <span className="text-[11px] text-muted/60 font-mono shrink-0">
-              {formatRelative(event.createdAt)}
+              {formatRelative(event.createdAt, now)}
             </span>
           </div>
           <div className="flex items-baseline gap-2 text-[12px] text-muted/70">
-            <span className="font-mono">{repoShort}</span>
+            <span className="font-mono">
+              {event.account}/{repoShort}
+            </span>
             <span className="text-muted/40">·</span>
             <span>{event.actor}</span>
             {event.detail && (
