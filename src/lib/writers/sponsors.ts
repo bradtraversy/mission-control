@@ -118,6 +118,58 @@ export async function verifySponsorPayment(
   await writeFileAtomic(absolute, updated);
 }
 
+function unpatchPaymentRow(raw: string, rowIndex: number): string {
+  const lines = raw.split(/\r?\n/);
+  const headingIdx = lines.findIndex((l) => /^##\s+Payment log\s*$/.test(l));
+  if (headingIdx < 0) {
+    throw new Error("Payment log section not found");
+  }
+
+  let dataRowsSeen = 0;
+  let foundIdx = -1;
+  for (let i = headingIdx + 1; i < lines.length; i++) {
+    const line = lines[i];
+    if (/^##\s/.test(line)) break;
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("|")) continue;
+    if (/^\|[\s\-|]+\|$/.test(trimmed)) continue;
+    if (/^\|\s*Date\s*\|/i.test(trimmed)) continue;
+    if (dataRowsSeen === rowIndex) {
+      foundIdx = i;
+      break;
+    }
+    dataRowsSeen++;
+  }
+  if (foundIdx < 0) {
+    throw new Error(`payment row ${rowIndex} not found`);
+  }
+
+  const cells = lines[foundIdx]
+    .split("|")
+    .map((c) => c.trim())
+    .slice(1, -1);
+  while (cells.length < 6) cells.push("");
+  cells[4] = "❌ unverified";
+  lines[foundIdx] = `| ${cells.join(" | ")} |`;
+  return lines.join("\n");
+}
+
+export async function unverifySponsorPayment(
+  slug: string,
+  rowIndex: number,
+): Promise<void> {
+  if (!Number.isInteger(rowIndex) || rowIndex < 0) {
+    throw new Error(`invalid rowIndex: ${rowIndex}`);
+  }
+  const absolute = await resolveSponsorFile(slug);
+  const raw = await fs.readFile(absolute, "utf-8");
+  const updated = unpatchPaymentRow(raw, rowIndex);
+  if (updated === raw) {
+    throw new Error("unverify produced no change (already unverified?)");
+  }
+  await writeFileAtomic(absolute, updated);
+}
+
 // Re-exported helper so the API route can stay tiny.
 export function isSafeSponsorSlug(slug: string): boolean {
   return SLUG_RE.test(slug);
