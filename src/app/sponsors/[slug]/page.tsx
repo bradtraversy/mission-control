@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Card, CardBody } from "@/components/ui/Card";
 import { MarkdownBody } from "@/components/markdown/MarkdownBody";
+import { PaymentUnverifyButton } from "@/components/sponsors/PaymentUnverifyButton";
 import { PaymentVerifyButton } from "@/components/sponsors/PaymentVerifyButton";
 import { buildObsidianUri, getSponsorBrand } from "@/lib";
 import type {
@@ -242,9 +243,7 @@ function PaymentsSection({
                   <td className="px-3 py-2 text-muted/80">{p.method || "—"}</td>
                   <td className="px-3 py-2">
                     {p.verified ? (
-                      <span className="text-emerald-300" title="verified">
-                        ✓
-                      </span>
+                      <PaymentUnverifyButton slug={slug} rowIndex={i} />
                     ) : (
                       <PaymentVerifyButton
                         slug={slug}
