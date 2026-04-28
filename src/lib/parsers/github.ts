@@ -86,6 +86,7 @@ type RawRepo = {
   html_url: string;
   archived?: boolean;
   fork?: boolean;
+  owner?: { login?: string };
 };
 
 type RawEvent = {
@@ -278,13 +279,23 @@ export async function getGithubFeed(): Promise<GithubFeedSnapshot> {
   let lastRateRemaining: number | null = null;
   let lastRateReset: string | null = null;
   try {
+    // /user/repos works for both user-owned and org-member PATs and returns
+    // private repos. Filter by owner.login === GITHUB_ORG so the tab only
+    // shows repos under the configured account, not every repo the PAT can
+    // see (collaborator/contributor noise).
     const reposRes = await ghFetch(
-      `${API}/orgs/${encodeURIComponent(org)}/repos?per_page=100&sort=pushed&direction=desc`,
+      `${API}/user/repos?per_page=100&sort=pushed&direction=desc&affiliation=owner,organization_member`,
       token,
     );
     lastRateRemaining = reposRes.rateRemaining;
     lastRateReset = reposRes.rateReset;
-    const repoList = (reposRes.data as RawRepo[]).filter((r) => !r.archived && !r.fork);
+    const orgLower = org.toLowerCase();
+    const repoList = (reposRes.data as RawRepo[]).filter(
+      (r) =>
+        !r.archived &&
+        !r.fork &&
+        r.owner?.login?.toLowerCase() === orgLower,
+    );
     const repos: GithubRepo[] = repoList.map((r) => ({
       name: r.name,
       fullName: r.full_name,
