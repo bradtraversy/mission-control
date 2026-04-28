@@ -3,6 +3,7 @@ import {
   Calendar,
   DollarSign,
   Folders,
+  GitBranch,
   History,
   Home,
   ListChecks,
@@ -25,6 +26,7 @@ const TABS = [
   { href: "/sponsors", label: "Sponsors", icon: DollarSign },
   { href: "/calendar", label: "Calendar", icon: Calendar },
   { href: "/network", label: "Network", icon: Network },
+  { href: "/github", label: "GitHub", icon: GitBranch },
   { href: "/agents", label: "Agents", icon: Bot },
   { href: "/settings", label: "Settings", icon: Settings },
 ] as const;
