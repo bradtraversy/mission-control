@@ -6,6 +6,7 @@ import { SponsorDeadlinesPanel } from "@/components/home/SponsorDeadlinesPanel";
 import { StatTiles } from "@/components/home/StatTiles";
 import { TasksPanel } from "@/components/home/TasksPanel";
 import { ThisWeekPanel } from "@/components/home/ThisWeekPanel";
+import { TodaysFocusPanel } from "@/components/home/TodaysFocusPanel";
 import { TodosNowPanel } from "@/components/home/TodosNowPanel";
 
 export default async function Page() {
@@ -15,9 +16,8 @@ export default async function Page() {
       <StatTiles {...data.stats} />
 
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2">
-          <ThisWeekPanel items={data.thisWeek} />
-        </div>
+        <ThisWeekPanel items={data.thisWeek} />
+        <TodaysFocusPanel briefing={data.todayBriefing} />
         <SponsorDeadlinesPanel brands={data.sponsorBrands} />
       </section>
 

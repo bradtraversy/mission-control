@@ -1,6 +1,7 @@
 import {
   getAutomationHealth,
   getCurrentState,
+  getDailyBriefing,
   getDigests,
   getServiceHealth,
   getSessions,
@@ -19,6 +20,7 @@ export async function fetchHomeData() {
     currentState,
     serviceHealth,
     automationHealth,
+    todayBriefing,
   ] = await Promise.all([
     getTodos(),
     getTasks(),
@@ -28,6 +30,7 @@ export async function fetchHomeData() {
     getCurrentState(),
     getServiceHealth(),
     getAutomationHealth(),
+    getDailyBriefing(),
   ]);
 
   const { brands: sponsorBrands, totals: sponsorTotals } = sponsorSnapshot;
@@ -62,6 +65,7 @@ export async function fetchHomeData() {
       lastSession: sessions[0] ?? null,
     },
     thisWeek: currentState.thisWeek,
+    todayBriefing,
     sponsorBrands,
     todosNow: todos.now,
     activeTasks,

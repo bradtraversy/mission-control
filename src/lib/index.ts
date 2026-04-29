@@ -26,6 +26,11 @@ export {
   type NetworkRegistryDrift,
 } from "./parsers/network";
 export { getCurrentState } from "./parsers/currentState";
+export {
+  getDailyBriefing,
+  type DailyBriefing,
+  type DailyCalendarEvent,
+} from "./parsers/daily";
 export { getAgents } from "./parsers/agents";
 export { getYoutubeVideos, getYoutubeRecent } from "./parsers/youtube";
 export {
