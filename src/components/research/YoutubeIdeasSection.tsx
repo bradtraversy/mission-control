@@ -154,7 +154,7 @@ function IdeaCard({
   }
 
   return (
-    <Card className="h-full">
+    <Card className="h-full bg-surface-2/60">
       <CardBody className="space-y-2 pt-3">
         <div className="flex items-start justify-between gap-2">
           <button
