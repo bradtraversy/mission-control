@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MarkdownBody } from "@/components/markdown/MarkdownBody";
+import { DigestSummary } from "@/components/research/DigestSummary";
 import { YoutubeIdeasSection } from "@/components/research/YoutubeIdeasSection";
 import {
   buildObsidianUri,
@@ -66,21 +67,25 @@ export default async function Page({
         )}
       </header>
 
+      <DigestSummary body={digest.body} />
+
       {ideas.length > 0 && (
-        <YoutubeIdeasSection
-          ideas={ideas}
-          obsidianUris={Object.fromEntries(
-            ideas.map((i) => [
-              i.relativePath,
-              buildObsidianUri(i.relativePath),
-            ]),
-          )}
-        />
+        <div className="pt-4 border-t border-border">
+          <YoutubeIdeasSection
+            ideas={ideas}
+            obsidianUris={Object.fromEntries(
+              ideas.map((i) => [
+                i.relativePath,
+                buildObsidianUri(i.relativePath),
+              ]),
+            )}
+          />
+        </div>
       )}
 
       <details className="pt-4 border-t border-border">
         <summary className="text-[13px] font-medium tracking-[0.15em] uppercase text-muted cursor-pointer hover:text-foreground">
-          Digest body
+          Full digest body (with Brad-angle annotations)
         </summary>
         <div className="mt-3">
           <MarkdownBody content={digest.body} />
