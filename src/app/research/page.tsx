@@ -22,16 +22,16 @@ export default async function Page({
         </p>
       </header>
 
+      <DigestViewer
+        digests={digests}
+        requestedDate={requestedDate}
+      />
+
       <YoutubeIdeasSection
         ideas={ideas}
         obsidianUris={Object.fromEntries(
           ideas.map((i) => [i.relativePath, buildObsidianUri(i.relativePath)]),
         )}
-      />
-
-      <DigestViewer
-        digests={digests}
-        requestedDate={requestedDate}
       />
     </div>
   );
