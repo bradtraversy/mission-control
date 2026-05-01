@@ -66,21 +66,26 @@ export default async function Page({
         )}
       </header>
 
-      <MarkdownBody content={digest.body} />
-
       {ideas.length > 0 && (
-        <div className="pt-4 border-t border-border">
-          <YoutubeIdeasSection
-            ideas={ideas}
-            obsidianUris={Object.fromEntries(
-              ideas.map((i) => [
-                i.relativePath,
-                buildObsidianUri(i.relativePath),
-              ]),
-            )}
-          />
-        </div>
+        <YoutubeIdeasSection
+          ideas={ideas}
+          obsidianUris={Object.fromEntries(
+            ideas.map((i) => [
+              i.relativePath,
+              buildObsidianUri(i.relativePath),
+            ]),
+          )}
+        />
       )}
+
+      <details className="pt-4 border-t border-border">
+        <summary className="text-[13px] font-medium tracking-[0.15em] uppercase text-muted cursor-pointer hover:text-foreground">
+          Digest body
+        </summary>
+        <div className="mt-3">
+          <MarkdownBody content={digest.body} />
+        </div>
+      </details>
     </div>
   );
 }
