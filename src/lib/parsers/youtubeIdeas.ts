@@ -120,6 +120,16 @@ function firstHeadingTitle(body: string, fallback: string): string {
   return m ? m[1].trim() : fallback;
 }
 
+// Returns true if the idea was generated from the given digest date,
+// matched against the `sources` frontmatter array (looks for the wiki-link
+// `[[Research/Digests/<date>]]`).
+export function ideaSourcedFromDigest(
+  idea: YoutubeIdea,
+  digestDate: string,
+): boolean {
+  return idea.sources.some((s) => s.includes(`Research/Digests/${digestDate}`));
+}
+
 export async function getYoutubeIdeas(): Promise<YoutubeIdea[]> {
   const files = await listMarkdown("Research/YouTube", {
     filter: (rel) => {
