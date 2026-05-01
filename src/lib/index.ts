@@ -11,6 +11,14 @@ export {
 export { getProjects } from "./parsers/projects";
 export { getSessions } from "./parsers/sessions";
 export { getDigests } from "./parsers/digests";
+export {
+  getYoutubeIdeas,
+  type YoutubeIdea,
+  type YoutubeIdeaStatus,
+  type YoutubeIdeaScore,
+  type YoutubeIdeaFormat,
+  type YoutubeIdeaShelfLife,
+} from "./parsers/youtubeIdeas";
 export { getNetworkFeeds } from "./parsers/networkFeeds";
 export { getCalendarSnapshot } from "./parsers/calendar";
 export {
