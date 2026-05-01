@@ -13,6 +13,7 @@ export { getSessions } from "./parsers/sessions";
 export { getDigests } from "./parsers/digests";
 export {
   getYoutubeIdeas,
+  ideaSourcedFromDigest,
   type YoutubeIdea,
   type YoutubeIdeaStatus,
   type YoutubeIdeaScore,
