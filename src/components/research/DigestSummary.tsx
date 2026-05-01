@@ -58,13 +58,13 @@ function SummaryItem({ item }: { item: DigestItem }) {
     <span className="text-foreground">{item.title}</span>
   );
   return (
-    <li className="text-[13px] leading-snug">
+    <li className="rounded-md border border-border/60 bg-surface/40 px-3 py-2 text-[13px] leading-snug">
       <div className="flex items-baseline gap-2">
         <span className="text-muted/60 shrink-0">{item.marker}</span>
         <div className="font-medium">{titleEl}</div>
       </div>
       {item.lead && (
-        <p className="text-[12px] text-muted leading-snug pl-5 mt-0.5">
+        <p className="text-[12px] text-muted leading-snug pl-5 mt-1">
           {item.lead}
         </p>
       )}
