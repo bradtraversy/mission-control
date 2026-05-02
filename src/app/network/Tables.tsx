@@ -1,8 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { formatRelativeTime } from "@/lib";
-import type { NetworkAutomation, NetworkGhost, NetworkOrphan } from "@/lib";
+import { formatRelativeTime } from "@/lib/format";
+import type {
+  NetworkAutomation,
+  NetworkGhost,
+  NetworkOrphan,
+} from "@/lib/parsers/network";
 
 const LIGHT_STYLE: Record<NetworkAutomation["trafficLight"], string> = {
   green: "bg-emerald-400/20 text-emerald-300",
