@@ -1,4 +1,6 @@
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
+import { AutomationsTable } from "@/components/network/AutomationsTable";
+import { NetworkLiveRefresh } from "@/components/network/NetworkLiveRefresh";
 import { formatRelativeTime, getNetworkSnapshot } from "@/lib";
 import type {
   NetworkAutomation,
@@ -72,6 +74,7 @@ export default async function Page() {
 
   return (
     <div className="p-6 space-y-5">
+      <NetworkLiveRefresh />
       <header className="flex items-baseline justify-between gap-4 flex-wrap">
         <div className="space-y-1">
           <h1 className="text-xl font-medium tracking-tight">Network</h1>
@@ -108,7 +111,14 @@ export default async function Page() {
           meta={`${automations.length} total · ${automationCounts.green ?? 0} ok · ${automationCounts.yellow ?? 0} warn · ${automationCounts.red ?? 0} fail · updated ${formatIso(snapshot.automationsUpdatedAt)}`}
         />
         <CardBody>
-          <AutomationsTable rows={automations} />
+          <AutomationsTable
+            rows={automations}
+            lightStyle={LIGHT_STYLE}
+            ownerStyle={OWNER_STYLE}
+            ownerTooltip={OWNER_TOOLTIP}
+            formatIso={formatIso}
+            statusLabel={automationStatusLabel}
+          />
         </CardBody>
       </Card>
     </div>
@@ -200,68 +210,6 @@ function automationStatusLabel(a: NetworkAutomation): string {
   return a.lastStatus ?? a.trafficLight;
 }
 
-function AutomationsTable({ rows }: { rows: NetworkAutomation[] }) {
-  if (rows.length === 0) {
-    return (
-      <p className="text-[14px] text-muted py-2">
-        No automations reported in <code>automations-health.json</code>.
-      </p>
-    );
-  }
-  return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-[14px]">
-        <thead>
-          <tr className="text-left text-[12px] uppercase tracking-wider text-muted/60 border-b border-border">
-            <th className="py-2 pr-3 font-medium">Status</th>
-            <th className="py-2 pr-3 font-medium">Name</th>
-            <th className="py-2 pr-3 font-medium">Owner</th>
-            <th className="py-2 pr-3 font-medium">Host</th>
-            <th className="py-2 pr-3 font-medium">Schedule</th>
-            <th className="py-2 pr-3 font-medium">Last Run</th>
-            <th className="py-2 pr-3 font-medium">Detail</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((a) => (
-            <tr key={a.id} className="border-b border-border/40 last:border-0">
-              <td className="py-2 pr-3">
-                <span
-                  className={`text-[12px] px-1.5 py-0.5 rounded ${LIGHT_STYLE[a.trafficLight]}`}
-                >
-                  {automationStatusLabel(a)}
-                </span>
-              </td>
-              <td className="py-2 pr-3 text-foreground">{a.name}</td>
-              <td className="py-2 pr-3">
-                {a.owner ? (
-                  <span
-                    title={OWNER_TOOLTIP[a.owner] ?? ""}
-                    className={`text-[12px] px-1.5 py-0.5 rounded font-mono ${OWNER_STYLE[a.owner] ?? "bg-surface-2 text-muted"}`}
-                  >
-                    {a.owner}
-                  </span>
-                ) : (
-                  <span className="text-[12px] text-muted/60">—</span>
-                )}
-              </td>
-              <td className="py-2 pr-3 text-muted font-mono">
-                {a.host ?? "—"}
-              </td>
-              <td className="py-2 pr-3 text-muted">
-                {a.scheduleHuman ?? "—"}
-              </td>
-              <td className="py-2 pr-3 text-muted">{formatIso(a.lastRun)}</td>
-              <td className="py-2 pr-3 text-muted/80 max-w-[32ch] truncate">
-                {a.detail ?? "—"}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
 
 function RegistryDriftBanner({ drift }: { drift: NetworkRegistryDrift }) {
   // No banner when there's nothing to say. The "unavailable" path still
