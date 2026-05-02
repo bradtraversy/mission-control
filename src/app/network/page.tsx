@@ -2,10 +2,34 @@ import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { formatRelativeTime, getNetworkSnapshot } from "@/lib";
 import type {
   NetworkAutomation,
+  NetworkGhost,
   NetworkMachine,
+  NetworkOrphan,
   NetworkRegistryDrift,
 } from "@/lib";
-import { AutomationsTable, GhostsTable, OrphansTable } from "./Tables";
+
+const LIGHT_STYLE: Record<NetworkAutomation["trafficLight"], string> = {
+  green: "bg-emerald-400/20 text-emerald-300",
+  yellow: "bg-amber-400/20 text-amber-300",
+  red: "bg-rose-400/25 text-rose-300",
+  unknown: "bg-surface-2 text-muted",
+};
+
+const OWNER_STYLE: Record<string, string> = {
+  claude: "bg-slate-400/15 text-slate-300",
+  cowork: "bg-orange-400/15 text-orange-300",
+  travis: "bg-accent/15 text-accent",
+  brad: "bg-emerald-400/15 text-emerald-300",
+  system: "bg-surface-2 text-muted",
+};
+
+const OWNER_TOOLTIP: Record<string, string> = {
+  claude: "Ask Claude Code directly. Edits vault skill files + re-registers.",
+  cowork: "Ask Cowork (desktop Claude) directly. Same scheduled-tasks MCP capabilities as Claude Code.",
+  travis: "Ask Travis in OpenClaw, or queue a Tasks/<date>-<slug>.md with agent: travis.",
+  brad: "Brad owns the source script/service — systemd timers, personal crons, account-level stuff.",
+  system: "Ubuntu/Debian default — don't touch unless something specific breaks.",
+};
 
 const STATUS_DOT: Record<"ok" | "warn" | "down", string> = {
   ok: "bg-emerald-400",
@@ -166,7 +190,83 @@ function MachineCard({ machine }: { machine: NetworkMachine }) {
   );
 }
 
+function automationStatusLabel(a: NetworkAutomation): string {
+  // When systemd reports `ok` but no heartbeat has landed, the row is stale and
+  // the amber color tells the truth — but the literal "ok" text in the pill
+  // reads as healthy. Override with "stale" so the word matches the color.
+  if (a.stale && (a.lastStatus === "ok" || a.lastStatus === null)) {
+    return "stale";
+  }
+  return a.lastStatus ?? a.trafficLight;
+}
+
+function AutomationsTable({ rows }: { rows: NetworkAutomation[] }) {
+  if (rows.length === 0) {
+    return (
+      <p className="text-[14px] text-muted py-2">
+        No automations reported in <code>automations-health.json</code>.
+      </p>
+    );
+  }
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-[14px]">
+        <thead>
+          <tr className="text-left text-[12px] uppercase tracking-wider text-muted/60 border-b border-border">
+            <th className="py-2 pr-3 font-medium">Status</th>
+            <th className="py-2 pr-3 font-medium">Name</th>
+            <th className="py-2 pr-3 font-medium">Owner</th>
+            <th className="py-2 pr-3 font-medium">Host</th>
+            <th className="py-2 pr-3 font-medium">Schedule</th>
+            <th className="py-2 pr-3 font-medium">Last Run</th>
+            <th className="py-2 pr-3 font-medium">Detail</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((a) => (
+            <tr key={a.id} className="border-b border-border/40 last:border-0">
+              <td className="py-2 pr-3">
+                <span
+                  className={`text-[12px] px-1.5 py-0.5 rounded ${LIGHT_STYLE[a.trafficLight]}`}
+                >
+                  {automationStatusLabel(a)}
+                </span>
+              </td>
+              <td className="py-2 pr-3 text-foreground">{a.name}</td>
+              <td className="py-2 pr-3">
+                {a.owner ? (
+                  <span
+                    title={OWNER_TOOLTIP[a.owner] ?? ""}
+                    className={`text-[12px] px-1.5 py-0.5 rounded font-mono ${OWNER_STYLE[a.owner] ?? "bg-surface-2 text-muted"}`}
+                  >
+                    {a.owner}
+                  </span>
+                ) : (
+                  <span className="text-[12px] text-muted/60">—</span>
+                )}
+              </td>
+              <td className="py-2 pr-3 text-muted font-mono">
+                {a.host ?? "—"}
+              </td>
+              <td className="py-2 pr-3 text-muted">
+                {a.scheduleHuman ?? "—"}
+              </td>
+              <td className="py-2 pr-3 text-muted">{formatIso(a.lastRun)}</td>
+              <td className="py-2 pr-3 text-muted/80 max-w-[32ch] truncate">
+                {a.detail ?? "—"}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function RegistryDriftBanner({ drift }: { drift: NetworkRegistryDrift }) {
+  // No banner when there's nothing to say. The "unavailable" path still
+  // surfaces though, because silently hiding drift detection failures defeats
+  // the whole point of a backstop.
   if (drift.unavailableReason) {
     return (
       <Card>
@@ -231,3 +331,104 @@ function RegistryDriftBanner({ drift }: { drift: NetworkRegistryDrift }) {
     </Card>
   );
 }
+
+function OrphansTable({ rows }: { rows: NetworkOrphan[] }) {
+  return (
+    <div className="overflow-x-auto">
+      <div className="text-[12px] uppercase tracking-wider text-muted/60 mb-1">
+        Orphans · live MCP, no registry entry
+      </div>
+      <table className="w-full text-[14px]">
+        <thead>
+          <tr className="text-left text-[12px] uppercase tracking-wider text-muted/60 border-b border-border">
+            <th className="py-2 pr-3 font-medium">Task ID</th>
+            <th className="py-2 pr-3 font-medium">Schedule</th>
+            <th className="py-2 pr-3 font-medium">Enabled</th>
+            <th className="py-2 pr-3 font-medium">Last Run</th>
+            <th className="py-2 pr-3 font-medium">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((o) => (
+            <tr
+              key={o.taskId}
+              className="border-b border-border/40 last:border-0"
+            >
+              <td className="py-2 pr-3 text-foreground font-mono text-[13px]">
+                {o.taskId}
+              </td>
+              <td className="py-2 pr-3 text-muted">
+                {o.scheduleHuman ?? "—"}
+              </td>
+              <td className="py-2 pr-3">
+                <span
+                  className={`text-[12px] px-1.5 py-0.5 rounded ${
+                    o.enabled
+                      ? "bg-amber-400/20 text-amber-300"
+                      : "bg-surface-2 text-muted"
+                  }`}
+                >
+                  {o.enabled ? "yes" : "no"}
+                </span>
+              </td>
+              <td className="py-2 pr-3 text-muted">{formatIso(o.lastRun)}</td>
+              <td className="py-2 pr-3 text-muted/80 max-w-[40ch] truncate">
+                {o.description ?? "—"}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function GhostsTable({ rows }: { rows: NetworkGhost[] }) {
+  return (
+    <div className="overflow-x-auto">
+      <div className="text-[12px] uppercase tracking-wider text-muted/60 mb-1">
+        Ghosts · registry entry, no live MCP task
+      </div>
+      <table className="w-full text-[14px]">
+        <thead>
+          <tr className="text-left text-[12px] uppercase tracking-wider text-muted/60 border-b border-border">
+            <th className="py-2 pr-3 font-medium">Registry ID</th>
+            <th className="py-2 pr-3 font-medium">Owner</th>
+            <th className="py-2 pr-3 font-medium">Schedule</th>
+            <th className="py-2 pr-3 font-medium">MCP Task ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((g) => (
+            <tr
+              key={g.registryId}
+              className="border-b border-border/40 last:border-0"
+            >
+              <td className="py-2 pr-3 text-foreground font-mono text-[13px]">
+                {g.registryId}
+              </td>
+              <td className="py-2 pr-3">
+                {g.owner ? (
+                  <span
+                    className={`text-[12px] px-1.5 py-0.5 rounded font-mono ${OWNER_STYLE[g.owner] ?? "bg-surface-2 text-muted"}`}
+                  >
+                    {g.owner}
+                  </span>
+                ) : (
+                  <span className="text-[12px] text-muted/60">—</span>
+                )}
+              </td>
+              <td className="py-2 pr-3 text-muted">
+                {g.scheduleHuman ?? "—"}
+              </td>
+              <td className="py-2 pr-3 text-muted font-mono text-[13px]">
+                {g.mcpTaskId}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
