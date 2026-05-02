@@ -3,13 +3,19 @@
 import { useMemo, useState } from "react";
 import type { NetworkAutomation } from "@/lib";
 
+export type AutomationRowView = {
+  /** The raw automation, used for sorting + status pill color. */
+  data: NetworkAutomation;
+  /** Pre-computed by the server (avoids server→client function-prop crash). */
+  displayStatus: string;
+  lastRunRelative: string;
+};
+
 type Props = {
-  rows: NetworkAutomation[];
+  rows: AutomationRowView[];
   lightStyle: Record<NetworkAutomation["trafficLight"], string>;
   ownerStyle: Record<string, string>;
   ownerTooltip: Record<string, string>;
-  formatIso: (value: string | null) => string;
-  statusLabel: (a: NetworkAutomation) => string;
 };
 
 type SortColumn =
@@ -38,12 +44,14 @@ function compareNullable(a: string | null, b: string | null): number {
 }
 
 function sortRows(
-  rows: NetworkAutomation[],
+  rows: AutomationRowView[],
   sort: SortState,
-): NetworkAutomation[] {
+): AutomationRowView[] {
   if (!sort) return rows;
   const { column, direction } = sort;
-  const sorted = [...rows].sort((a, b) => {
+  const sorted = [...rows].sort((aRow, bRow) => {
+    const a = aRow.data;
+    const b = bRow.data;
     let cmp = 0;
     switch (column) {
       case "status":
@@ -62,7 +70,6 @@ function sortRows(
         cmp = compareNullable(a.scheduleHuman ?? null, b.scheduleHuman ?? null);
         break;
       case "lastRun":
-        // Newest first by default — use string compare on ISO timestamps.
         cmp = compareNullable(a.lastRun ?? null, b.lastRun ?? null);
         break;
       case "detail":
@@ -79,8 +86,6 @@ export function AutomationsTable({
   lightStyle,
   ownerStyle,
   ownerTooltip,
-  formatIso,
-  statusLabel,
 }: Props) {
   const [sort, setSort] = useState<SortState>(null);
 
@@ -154,40 +159,43 @@ export function AutomationsTable({
           </tr>
         </thead>
         <tbody>
-          {sorted.map((a) => (
-            <tr key={a.id} className="border-b border-border/40 last:border-0">
-              <td className="py-2 pr-3">
-                <span
-                  className={`text-[12px] px-1.5 py-0.5 rounded ${lightStyle[a.trafficLight]}`}
-                >
-                  {statusLabel(a)}
-                </span>
-              </td>
-              <td className="py-2 pr-3 text-foreground">{a.name}</td>
-              <td className="py-2 pr-3">
-                {a.owner ? (
+          {sorted.map((row) => {
+            const a = row.data;
+            return (
+              <tr key={a.id} className="border-b border-border/40 last:border-0">
+                <td className="py-2 pr-3">
                   <span
-                    title={ownerTooltip[a.owner] ?? ""}
-                    className={`text-[12px] px-1.5 py-0.5 rounded font-mono ${ownerStyle[a.owner] ?? "bg-surface-2 text-muted"}`}
+                    className={`text-[12px] px-1.5 py-0.5 rounded ${lightStyle[a.trafficLight]}`}
                   >
-                    {a.owner}
+                    {row.displayStatus}
                   </span>
-                ) : (
-                  <span className="text-[12px] text-muted/60">—</span>
-                )}
-              </td>
-              <td className="py-2 pr-3 text-muted font-mono">
-                {a.host ?? "—"}
-              </td>
-              <td className="py-2 pr-3 text-muted">
-                {a.scheduleHuman ?? "—"}
-              </td>
-              <td className="py-2 pr-3 text-muted">{formatIso(a.lastRun)}</td>
-              <td className="py-2 pr-3 text-muted/80 max-w-[32ch] truncate">
-                {a.detail ?? "—"}
-              </td>
-            </tr>
-          ))}
+                </td>
+                <td className="py-2 pr-3 text-foreground">{a.name}</td>
+                <td className="py-2 pr-3">
+                  {a.owner ? (
+                    <span
+                      title={ownerTooltip[a.owner] ?? ""}
+                      className={`text-[12px] px-1.5 py-0.5 rounded font-mono ${ownerStyle[a.owner] ?? "bg-surface-2 text-muted"}`}
+                    >
+                      {a.owner}
+                    </span>
+                  ) : (
+                    <span className="text-[12px] text-muted/60">—</span>
+                  )}
+                </td>
+                <td className="py-2 pr-3 text-muted font-mono">
+                  {a.host ?? "—"}
+                </td>
+                <td className="py-2 pr-3 text-muted">
+                  {a.scheduleHuman ?? "—"}
+                </td>
+                <td className="py-2 pr-3 text-muted">{row.lastRunRelative}</td>
+                <td className="py-2 pr-3 text-muted/80 max-w-[32ch] truncate">
+                  {a.detail ?? "—"}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

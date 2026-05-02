@@ -112,12 +112,14 @@ export default async function Page() {
         />
         <CardBody>
           <AutomationsTable
-            rows={automations}
+            rows={automations.map((a) => ({
+              data: a,
+              displayStatus: automationStatusLabel(a),
+              lastRunRelative: formatIso(a.lastRun),
+            }))}
             lightStyle={LIGHT_STYLE}
             ownerStyle={OWNER_STYLE}
             ownerTooltip={OWNER_TOOLTIP}
-            formatIso={formatIso}
-            statusLabel={automationStatusLabel}
           />
         </CardBody>
       </Card>
