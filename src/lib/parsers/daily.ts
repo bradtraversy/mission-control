@@ -91,14 +91,23 @@ function parseCalendar(content: string | null): {
 }
 
 const NUMBERED_RE = /^\s*\d+\.\s+(.+?)\s*$/;
+const BULLET_RE = /^\s*-\s+(.+?)\s*$/;
 
+// The morning-briefing skill has used a few different shapes for the actionable
+// section over time — earlier files used `## Suggested Order of Operations`
+// with numbered items, newer files use `## Pending — Actionable` with bulleted
+// items. Accept both heading names and both list styles.
 function parseSuggestedOrder(content: string | null, max = 5): string[] {
   if (!content) return [];
   const items: string[] = [];
   for (const raw of content.split(/\r?\n/)) {
-    const m = raw.match(NUMBERED_RE);
-    if (!m) continue;
-    items.push(m[1].trim());
+    const numbered = raw.match(NUMBERED_RE);
+    if (numbered) {
+      items.push(numbered[1].trim());
+    } else {
+      const bullet = raw.match(BULLET_RE);
+      if (bullet) items.push(bullet[1].trim());
+    }
     if (items.length >= max) break;
   }
   return items;
@@ -130,7 +139,10 @@ export async function getDailyBriefing(
     /today'?s\s+calendar/i.test(h),
   );
   const suggestedSection = lastSection(sections, (h) =>
-    /suggested\s+order/i.test(h),
+    // Match the actionable section across the heading variants the
+    // morning-briefing skill has used: "Suggested Order of Operations"
+    // (original), "Pending — Actionable" (current), or any "Action Items".
+    /suggested\s+order|pending[\s—-]*actionable|action\s+items/i.test(h),
   );
   const updateSection = lastSection(sections, (h) => UPDATE_HEADING_RE.test(h));
   const lastUpdate = updateSection
