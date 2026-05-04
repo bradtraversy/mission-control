@@ -12,9 +12,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <TopBar />
       </header>
       <div className="flex-1 min-h-0 flex">
-        <aside className="w-56 shrink-0 border-r border-border">
-          <Sidebar />
-        </aside>
+        <Sidebar />
         <main className="flex-1 min-w-0 overflow-y-auto">{children}</main>
         <ResizableRail>
           <LiveActivityRail />

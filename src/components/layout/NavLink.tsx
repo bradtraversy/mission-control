@@ -7,9 +7,10 @@ type Props = {
   href: string;
   label: string;
   icon: React.ReactNode;
+  collapsed?: boolean;
 };
 
-export function NavLink({ href, label, icon }: Props) {
+export function NavLink({ href, label, icon, collapsed }: Props) {
   const pathname = usePathname();
   const active =
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -17,14 +18,17 @@ export function NavLink({ href, label, icon }: Props) {
   return (
     <Link
       href={href}
-      className={`flex items-center gap-2.5 px-3 py-1.5 rounded-md text-base transition-colors ${
+      title={collapsed ? label : undefined}
+      className={`flex items-center gap-2.5 ${
+        collapsed ? "justify-center px-0" : "px-3"
+      } py-1.5 rounded-md text-base transition-colors ${
         active
           ? "bg-surface-2 text-foreground"
           : "text-muted hover:text-foreground hover:bg-surface"
       }`}
     >
-      <span className="opacity-80">{icon}</span>
-      <span>{label}</span>
+      <span className="opacity-80 shrink-0">{icon}</span>
+      {!collapsed && <span className="truncate">{label}</span>}
     </Link>
   );
 }
