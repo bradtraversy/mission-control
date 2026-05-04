@@ -1,5 +1,6 @@
 import { LiveActivityRail } from "./LiveActivityRail";
 import { LiveUpdater } from "./LiveUpdater";
+import { ResizableRail } from "./ResizableRail";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 
@@ -15,9 +16,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Sidebar />
         </aside>
         <main className="flex-1 min-w-0 overflow-y-auto">{children}</main>
-        <aside className="w-80 shrink-0 hidden lg:block">
+        <ResizableRail>
           <LiveActivityRail />
-        </aside>
+        </ResizableRail>
       </div>
     </div>
   );

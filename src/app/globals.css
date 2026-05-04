@@ -23,3 +23,32 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+
+/* Custom scrollbars — dark, slim, hover-brighten */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2e2e36 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #2e2e36;
+  border: 2px solid var(--color-background);
+  border-radius: 8px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #44444f;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
