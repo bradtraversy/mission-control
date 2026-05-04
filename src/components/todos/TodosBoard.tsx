@@ -307,22 +307,36 @@ function TodoRow({
         onClick={() => onToggle(todo)}
         disabled={disabled}
         aria-label={todo.done ? `Mark #${todo.id} open` : `Mark #${todo.id} done`}
-        className={`mt-0.5 inline-block w-3.5 h-3.5 rounded-[3px] border shrink-0 transition-colors cursor-pointer disabled:cursor-wait ${
+        className={`mt-1 inline-block w-3.5 h-3.5 rounded-[3px] border shrink-0 transition-colors cursor-pointer disabled:cursor-wait ${
           todo.done
             ? "bg-emerald-400/25 border-emerald-400/50 hover:bg-emerald-400/35"
             : "border-border hover:border-foreground/40"
         }`}
       />
-      <span className="text-[13px] text-muted/60 font-mono tabular-nums shrink-0 mt-0.5">
+      <span className="text-[13px] text-muted/60 font-mono tabular-nums shrink-0 mt-1">
         #{todo.id}
       </span>
-      <span
-        className={`text-base flex-1 min-w-0 ${
-          todo.done ? "line-through text-muted" : "text-foreground"
-        }`}
-      >
-        {todo.text}
-      </span>
+      <div className="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+        <span
+          className={`text-base break-words ${
+            todo.done ? "line-through text-muted" : "text-foreground"
+          }`}
+        >
+          {todo.text}
+        </span>
+        {todo.tags.length > 0 && (
+          <div className="flex gap-1 flex-wrap">
+            {todo.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[12px] px-1.5 py-0.5 rounded bg-surface-2 text-muted"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
       {onMove && (
         <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
           <MoveButton
@@ -337,18 +351,6 @@ function TodoRow({
             disabled={disabled || !next}
             onClick={() => next && onMove(todo, next)}
           />
-        </div>
-      )}
-      {todo.tags.length > 0 && (
-        <div className="flex gap-1 shrink-0 flex-wrap justify-end">
-          {todo.tags.map((tag) => (
-            <span
-              key={tag}
-              className="text-[12px] px-1.5 py-0.5 rounded bg-surface-2 text-muted"
-            >
-              #{tag}
-            </span>
-          ))}
         </div>
       )}
     </div>
