@@ -1,20 +1,19 @@
 # Mission Control
 
-Brad's personal command center. Reads the Obsidian vault as its database and surfaces tasks, projects, sessions, research, network health, calendar, and agent activity in one place.
+A personal command center built on top of an Obsidian vault. Reads markdown files directly from disk and surfaces tasks, projects, sessions, research, network health, calendar, and agent activity in one place — no database, no cloud, no auth.
+
+Built for single-user, local-network use. The vault on disk is the source of truth; this app is a read-mostly view with a narrow write surface.
 
 - **Framework**: Next.js 16 (App Router) + React 19 + TypeScript
 - **Styling**: Tailwind CSS v4
-- **Data source**: the Obsidian vault at `$VAULT_PATH` — read directly from disk, no DB
-- **Hosting**: LAN-only on trav-ai (port 8890), local network trusted, no auth
-- **Dev machine**: trav-dev at `~/Code/mission-control`
-- **Repo**: private, `travxlabs/mission-control` (cloned via the `github-travxlabs` SSH alias)
-
-Supersedes the `travxlabs/network-dashboard` Python MVP — Network panels will be rebuilt in React here and the Python service retired once this tab reaches parity. Full spec: `Projects/TravAI/Mission Control/Build Brief.md` in the vault.
+- **Data source**: an Obsidian vault at `$VAULT_PATH` — read directly from disk, no DB
+- **Hosting**: designed to run as a local service on a home/lab machine
 
 ## Setup
 
 ```bash
 cp .env.example .env.local
+# edit .env.local and set VAULT_PATH to your Obsidian vault
 pnpm install
 pnpm dev
 ```
@@ -30,30 +29,21 @@ Dev server runs on `http://localhost:3000`.
 
 ## Env vars
 
-| Variable     | Description                                                      |
-| ------------ | ---------------------------------------------------------------- |
-| `VAULT_PATH` | Absolute path to the Obsidian vault directory. Required.         |
-| `PORT`       | Port for `next start` on trav-ai. Defaults to 3000 otherwise.    |
+| Variable     | Description                                                 |
+| ------------ | ----------------------------------------------------------- |
+| `VAULT_PATH` | Absolute path to your Obsidian vault directory. Required.   |
+| `PORT`       | Port for `next start` in production. Defaults to 3000.      |
 
-## Topology
+## How it works
 
-```
-trav-dev (dev)                          trav-ai (prod, LAN-only)
-─────────────────                       ─────────────────────────
-~/Code/mission-control                  ~/Code/mission-control
-    pnpm dev                                pnpm start → :8890
-         │                                       ▲
-         │ git push                              │ git pull && systemctl --user restart
-         ▼                                       │
-    github.com/travxlabs/mission-control (private)
-                        ▲
-                        │ reads (both sides)
-                        │
-                 ~/Documents/Traversy Lab/   ← the vault (database)
-```
+The vault is the database. Every read parses YAML frontmatter from a markdown file with `gray-matter`, and every write goes back as a markdown file Obsidian can open. There's no hidden state and no sidecar files — anything Mission Control writes, you could also have written by hand.
 
-Ownership: Claude (trav-dev) owns the code; Travis (trav-ai) owns `Network/data/*.json` feeds and only runs `git pull && systemctl --user restart mission-control` after Claude pushes.
+A file watcher (`chokidar`) on the server pushes change events to the browser over SSE, so panels stay live as the vault is edited.
 
-## Deploy
+## Notes
 
-Deploy to trav-ai runs as a systemd-user service — no Docker. See `Network/Runbooks/Deploy Mission Control to trav-ai.md` in the vault for the full runbook (authored by Travis).
+This was built as a personal tool, so the vault layout it expects (`Todos/`, `Tasks/`, `Projects/`, `Network/`, `Core/Sessions/`, etc.) reflects one specific workflow. If you fork it, expect to rewire the parsers in `src/lib/parsers/` to match your own vault structure.
+
+## License
+
+MIT

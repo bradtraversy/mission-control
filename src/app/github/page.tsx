@@ -107,8 +107,8 @@ function NotConfigured() {
           GitHub token not set
         </h2>
         <p className="text-[14px] text-muted leading-relaxed">
-          Set <code>GITHUB_TOKEN</code> in <code>.env.local</code> on trav-ai
-          and restart the service. Use a fine-grained PAT with{" "}
+          Set <code>GITHUB_TOKEN</code> in <code>.env.local</code> and restart
+          the service. Use a fine-grained PAT with{" "}
           <code>metadata: read</code> + <code>contents: read</code> scoped to
           your accounts. Configure accounts via{" "}
           <code>GITHUB_ACCOUNTS=user1,user2</code>.
