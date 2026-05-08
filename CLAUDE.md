@@ -1,5 +1,3 @@
-@AGENTS.md
-
 # Mission Control
 
 A personal command center that reads an Obsidian vault as its database. Single-user, local-network use, no auth.
