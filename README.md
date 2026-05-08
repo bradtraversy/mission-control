@@ -1,6 +1,6 @@
 # Mission Control
 
-![Mission Control](docs/screenshot.png)
+![Mission Control](docs/screenshot.webp)
 
 A personal command center I built to manage my own workflow on top of an Obsidian vault. It reads markdown files straight from disk and surfaces tasks, projects, sessions, research, network health, calendar, and agent activity in a single dashboard — no database, no cloud, no auth.
 
