@@ -42,6 +42,11 @@ The vault is the database. Every read parses YAML frontmatter from a markdown fi
 
 A file watcher (`chokidar`) on the server pushes change events to the browser over SSE, so panels stay live as the vault is edited.
 
+## Docs
+
+- [Vault layout](docs/VAULT_LAYOUT.md) — the directory shape and file formats Mission Control expects to find inside `$VAULT_PATH`. Start here if you want to fork it onto a different vault structure.
+- [Architecture](docs/ARCHITECTURE.md) — how the parsers, writers, file watcher, and SSE pipeline fit together.
+
 ## Notes
 
 The vault layout this expects (`Todos/`, `Tasks/`, `Projects/`, `Network/`, `Core/Sessions/`, etc.) reflects my personal workflow. The parsers in `src/lib/parsers/` are the place to start if you want to adapt it to a different structure.
