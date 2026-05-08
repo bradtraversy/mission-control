@@ -500,7 +500,7 @@ function parseAccounts(): string[] {
   }
   const fromOrg = process.env.GITHUB_ORG;
   if (fromOrg) return [fromOrg.trim()];
-  return ["travxlabs"];
+  return [];
 }
 
 export async function getGithubFeed(): Promise<GithubFeedSnapshot> {

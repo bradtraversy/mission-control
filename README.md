@@ -1,8 +1,10 @@
 # Mission Control
 
-A personal command center built on top of an Obsidian vault. Reads markdown files directly from disk and surfaces tasks, projects, sessions, research, network health, calendar, and agent activity in one place — no database, no cloud, no auth.
+![Mission Control](docs/screenshot.png)
 
-Built for single-user, local-network use. The vault on disk is the source of truth; this app is a read-mostly view with a narrow write surface.
+A personal command center I built to manage my own workflow on top of an Obsidian vault. It reads markdown files straight from disk and surfaces tasks, projects, sessions, research, network health, calendar, and agent activity in a single dashboard — no database, no cloud, no auth.
+
+This is **not** a general-purpose tool. It's tailored to the specific way I structure my vault and run my day, and I'm publishing it mostly so people can see how it works or pick pieces out for their own setup. If you fork it, expect to rewire the parsers to match your own vault layout.
 
 - **Framework**: Next.js 16 (App Router) + React 19 + TypeScript
 - **Styling**: Tailwind CSS v4
@@ -42,7 +44,7 @@ A file watcher (`chokidar`) on the server pushes change events to the browser ov
 
 ## Notes
 
-This was built as a personal tool, so the vault layout it expects (`Todos/`, `Tasks/`, `Projects/`, `Network/`, `Core/Sessions/`, etc.) reflects one specific workflow. If you fork it, expect to rewire the parsers in `src/lib/parsers/` to match your own vault structure.
+The vault layout this expects (`Todos/`, `Tasks/`, `Projects/`, `Network/`, `Core/Sessions/`, etc.) reflects my personal workflow. The parsers in `src/lib/parsers/` are the place to start if you want to adapt it to a different structure.
 
 ## License
 
