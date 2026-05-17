@@ -15,7 +15,9 @@ type Props = {
 const STATUSES: TaskStatus[] = ["queued", "claimed", "done"];
 const AGENT_FILTERS: (TaskAgent | "all")[] = [
   "all",
-  "travis",
+  "sysadmin",
+  "creator",
+  "secretary",
   "claude-code",
   "claude-cowork",
   "brad",
@@ -34,15 +36,19 @@ const STATUS_HINTS: Record<TaskStatus, string> = {
 };
 
 const AGENT_STYLE: Record<TaskAgent, string> = {
-  travis: "bg-accent/15 text-accent",
+  sysadmin: "bg-sky-400/15 text-sky-300",
+  creator: "bg-fuchsia-400/15 text-fuchsia-300",
+  secretary: "bg-violet-400/15 text-violet-300",
   "claude-code": "bg-emerald-400/15 text-emerald-300",
-  "claude-cowork": "bg-sky-400/15 text-sky-300",
+  "claude-cowork": "bg-orange-400/15 text-orange-300",
   brad: "bg-surface-2 text-foreground",
 };
 
 const AGENT_LABEL: Record<TaskAgent | "all", string> = {
   all: "All",
-  travis: "Travis",
+  sysadmin: "Sysadmin",
+  creator: "Creator",
+  secretary: "Secretary",
   "claude-code": "Claude Code",
   "claude-cowork": "Claude Cowork",
   brad: "Brad",
@@ -55,7 +61,7 @@ export function TasksBoard({ tasks, taskUris }: Props) {
 
   const [adding, setAdding] = useState(false);
   const [draftTitle, setDraftTitle] = useState("");
-  const [draftAgent, setDraftAgent] = useState<TaskAgent>("travis");
+  const [draftAgent, setDraftAgent] = useState<TaskAgent>("sysadmin");
   const [draftBody, setDraftBody] = useState("");
 
   const resetDraft = () => {
@@ -207,7 +213,9 @@ export function TasksBoard({ tasks, taskUris }: Props) {
               disabled={isPending}
               className="text-[14px] bg-surface-2/60 border border-border rounded px-1.5 py-1 text-foreground focus:outline-none focus:border-accent/60"
             >
-              <option value="travis">Travis</option>
+              <option value="sysadmin">Sysadmin</option>
+              <option value="creator">Creator</option>
+              <option value="secretary">Secretary</option>
               <option value="claude-code">Claude Code</option>
               <option value="claude-cowork">Claude Cowork</option>
               <option value="brad">Brad</option>
@@ -301,7 +309,7 @@ function Column({
         {tasks.length === 0 && (
           <p className="text-[13px] text-muted/60 italic py-1">
             {status === "queued"
-              ? "No tasks waiting. Ping Travis or drop one in."
+              ? "No tasks waiting. Ping sysadmin or drop one in."
               : status === "claimed"
                 ? "Nothing in flight."
                 : "Nothing completed yet."}

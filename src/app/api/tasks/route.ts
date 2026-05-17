@@ -3,7 +3,9 @@ import { addTask } from "@/lib/writers/tasks";
 import type { TaskAgent } from "@/lib/types";
 
 const VALID_AGENTS: ReadonlySet<TaskAgent> = new Set([
-  "travis",
+  "sysadmin",
+  "creator",
+  "secretary",
   "claude-code",
   "claude-cowork",
   "brad",

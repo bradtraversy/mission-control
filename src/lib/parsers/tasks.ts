@@ -12,7 +12,9 @@ import type {
 
 const STATUSES: ReadonlySet<TaskStatus> = new Set(["queued", "claimed", "done"]);
 const AGENTS: ReadonlySet<TaskAgent> = new Set([
-  "travis",
+  "sysadmin",
+  "creator",
+  "secretary",
   "claude-code",
   "claude-cowork",
   "brad",
@@ -39,6 +41,7 @@ function coerceStatus(value: unknown): TaskStatus {
 }
 
 function coerceAgent(value: unknown): TaskAgent {
+  if (value === "travis") return "sysadmin";
   return AGENTS.has(value as TaskAgent) ? (value as TaskAgent) : "brad";
 }
 

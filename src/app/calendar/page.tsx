@@ -28,11 +28,11 @@ export default async function Page() {
         <header className="space-y-1">
           <h1 className="text-xl font-medium tracking-tight">Calendar</h1>
           <p className="text-[14px] text-muted">
-            Calendar sync not set up — ask Travis.
+            Calendar sync not set up — ask secretary.
           </p>
         </header>
         <p className="text-[14px] text-muted">
-          Expected at <code>Calendar/Upcoming.md</code>. Travis runs a scheduled
+          Expected at <code>Calendar/Upcoming.md</code>. Secretary owns the scheduled
           task (every 30 min) that mirrors the next 14 days of Google Calendar
           events into that file.
         </p>

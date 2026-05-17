@@ -11,7 +11,7 @@ const SOURCE_DIR: Record<SessionSource, string> = {
 
 const SOURCE_LABEL: Record<SessionSource, string> = {
   "claude-code": "Claude Code",
-  openclaw: "Travis",
+  openclaw: "OpenClaw",
 };
 
 const SOURCE_STYLE: Record<SessionSource, string> = {

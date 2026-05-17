@@ -33,6 +33,7 @@ export {
   type NetworkOrphan,
   type NetworkGhost,
   type NetworkRegistryDrift,
+  type NetworkStagedAutomation,
 } from "./parsers/network";
 export { getCurrentState } from "./parsers/currentState";
 export {

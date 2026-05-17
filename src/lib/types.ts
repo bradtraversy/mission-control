@@ -31,7 +31,7 @@ export type TodosSnapshot = {
 
 // Tasks
 export type TaskStatus = "queued" | "claimed" | "done";
-export type TaskAgent = "travis" | "claude-code" | "claude-cowork" | "brad";
+export type TaskAgent = "sysadmin" | "creator" | "secretary" | "claude-code" | "claude-cowork" | "brad";
 
 export type Task = {
   filename: string;

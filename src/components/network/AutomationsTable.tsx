@@ -21,6 +21,7 @@ type Props = {
 type SortColumn =
   | "status"
   | "name"
+  | "source"
   | "owner"
   | "host"
   | "schedule"
@@ -59,6 +60,9 @@ function sortRows(
         break;
       case "name":
         cmp = a.name.localeCompare(b.name);
+        break;
+      case "source":
+        cmp = compareNullable(a.source ?? null, b.source ?? null);
         break;
       case "owner":
         cmp = compareNullable(a.owner ?? null, b.owner ?? null);
@@ -133,6 +137,12 @@ export function AutomationsTable({
               onClick={handleHeaderClick}
             />
             <SortHeader
+              column="source"
+              label="Source"
+              sort={sort}
+              onClick={handleHeaderClick}
+            />
+            <SortHeader
               column="host"
               label="Host"
               sort={sort}
@@ -182,6 +192,9 @@ export function AutomationsTable({
                   ) : (
                     <span className="text-[12px] text-muted/60">—</span>
                   )}
+                </td>
+                <td className="py-2 pr-3 text-muted font-mono text-[12px]">
+                  {a.source ?? "—"}
                 </td>
                 <td className="py-2 pr-3 text-muted font-mono">
                   {a.host ?? "—"}

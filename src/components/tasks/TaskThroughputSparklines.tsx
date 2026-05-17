@@ -9,16 +9,20 @@ type Props = {
 const BLOCKS = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"];
 
 const AGENT_LABEL: Record<TaskAgent, string> = {
-  travis: "Travis",
+  sysadmin: "Sysadmin",
+  creator: "Creator",
+  secretary: "Secretary",
   "claude-code": "Claude Code",
   "claude-cowork": "Claude Cowork",
   brad: "Brad",
 };
 
 const AGENT_TONE: Record<TaskAgent, string> = {
-  travis: "text-accent",
+  sysadmin: "text-sky-300",
+  creator: "text-fuchsia-300",
+  secretary: "text-violet-300",
   "claude-code": "text-emerald-300",
-  "claude-cowork": "text-sky-300",
+  "claude-cowork": "text-orange-300",
   brad: "text-foreground/80",
 };
 

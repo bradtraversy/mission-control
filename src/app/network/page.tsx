@@ -8,6 +8,7 @@ import type {
   NetworkMachine,
   NetworkOrphan,
   NetworkRegistryDrift,
+  NetworkStagedAutomation,
 } from "@/lib";
 
 const LIGHT_STYLE: Record<NetworkAutomation["trafficLight"], string> = {
@@ -21,6 +22,9 @@ const OWNER_STYLE: Record<string, string> = {
   claude: "bg-slate-400/15 text-slate-300",
   cowork: "bg-orange-400/15 text-orange-300",
   travis: "bg-accent/15 text-accent",
+  sysadmin: "bg-sky-400/15 text-sky-300",
+  creator: "bg-fuchsia-400/15 text-fuchsia-300",
+  secretary: "bg-violet-400/15 text-violet-300",
   brad: "bg-emerald-400/15 text-emerald-300",
   system: "bg-surface-2 text-muted",
 };
@@ -28,7 +32,10 @@ const OWNER_STYLE: Record<string, string> = {
 const OWNER_TOOLTIP: Record<string, string> = {
   claude: "Ask Claude Code directly. Edits vault skill files + re-registers.",
   cowork: "Ask Cowork (desktop Claude) directly. Same scheduled-tasks MCP capabilities as Claude Code.",
-  travis: "Ask Travis in OpenClaw, or queue a Tasks/<date>-<slug>.md with agent: travis.",
+  travis: "Legacy OpenClaw owner value. Retired; use sysadmin, creator, or secretary instead.",
+  sysadmin: "Hermes sysadmin profile. Queue Tasks with agent: sysadmin for homelab/network work.",
+  creator: "Hermes creator profile. Owns content/research delivery jobs after cutover.",
+  secretary: "Hermes secretary profile. Owns calendar/admin digest jobs after cutover.",
   brad: "Brad owns the source script/service — systemd timers, personal crons, account-level stuff.",
   system: "Ubuntu/Debian default — don't touch unless something specific breaks.",
 };
@@ -54,7 +61,7 @@ function formatIso(value: string | null): string {
 
 export default async function Page() {
   const snapshot = await getNetworkSnapshot();
-  const { connectivity, machines, automations, registryDrift } = snapshot;
+  const { connectivity, machines, automations, registryDrift, stagedAutomations } = snapshot;
 
   const onlineCount = machines.filter((m) => m.online && !m.stale).length;
   const overallStatus: "ok" | "warn" | "down" =
@@ -105,6 +112,8 @@ export default async function Page() {
 
       <RegistryDriftBanner drift={registryDrift} />
 
+      <HermesStagingCard rows={stagedAutomations} />
+
       <Card>
         <CardHeader
           title="Automations"
@@ -124,6 +133,84 @@ export default async function Page() {
         </CardBody>
       </Card>
     </div>
+  );
+}
+
+function HermesStagingCard({ rows }: { rows: NetworkStagedAutomation[] }) {
+  if (rows.length === 0) return null;
+
+  const activeCount = rows.filter((row) => row.state.toLowerCase() === "active").length;
+  const pausedCount = rows.filter((row) => row.state.toLowerCase() === "paused").length;
+
+  return (
+    <Card>
+      <CardHeader
+        title="Hermes cutover staging"
+        meta={`${rows.length} staged jobs · ${activeCount} active · ${pausedCount} paused`}
+        action={
+          <span className="text-[12px] px-1.5 py-0.5 rounded bg-sky-400/15 text-sky-300">
+            OpenClaw replacement path
+          </span>
+        }
+      />
+      <CardBody className="space-y-3">
+        <p className="text-[13px] text-muted/80">
+          Parsed from <code>Network/Automations.md</code>. Paused jobs are ready
+          for cutover but should stay paused until the matching OpenClaw delivery
+          job is disabled, otherwise Discord gets duplicate morning posts.
+        </p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-[14px]">
+            <thead>
+              <tr className="text-left text-[12px] uppercase tracking-wider text-muted/60 border-b border-border">
+                <th className="py-2 pr-3 font-medium">Profile</th>
+                <th className="py-2 pr-3 font-medium">Job</th>
+                <th className="py-2 pr-3 font-medium">Schedule</th>
+                <th className="py-2 pr-3 font-medium">State</th>
+                <th className="py-2 pr-3 font-medium">Delivery</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => {
+                const state = row.state.toLowerCase();
+                return (
+                  <tr key={row.jobId} className="border-b border-border/40 last:border-0">
+                    <td className="py-2 pr-3">
+                      <span
+                        className={`text-[12px] px-1.5 py-0.5 rounded font-mono ${OWNER_STYLE[row.profile] ?? "bg-surface-2 text-muted"}`}
+                      >
+                        {row.profile}
+                      </span>
+                    </td>
+                    <td className="py-2 pr-3">
+                      <div className="text-foreground">{row.name}</div>
+                      <div className="text-[12px] text-muted font-mono">{row.jobId}</div>
+                    </td>
+                    <td className="py-2 pr-3 text-muted font-mono text-[13px]">
+                      {row.schedule}
+                    </td>
+                    <td className="py-2 pr-3">
+                      <span
+                        className={`text-[12px] px-1.5 py-0.5 rounded ${
+                          state === "active"
+                            ? "bg-emerald-400/15 text-emerald-300"
+                            : "bg-amber-400/15 text-amber-300"
+                        }`}
+                      >
+                        {row.state}
+                      </span>
+                    </td>
+                    <td className="py-2 pr-3 text-muted/80 max-w-[36ch] truncate">
+                      {row.delivery}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </CardBody>
+    </Card>
   );
 }
 

@@ -26,8 +26,8 @@ export default async function Page() {
         <h1 className="text-xl font-medium tracking-tight">Tasks</h1>
         <p className="text-[14px] text-muted">
           Short-term quick queue over Tasks/*.md · {active.length}{" "}
-          {active.length === 1 ? "task" : "tasks"} · Travis&apos;s heartbeat
-          pulls from here
+          {active.length === 1 ? "task" : "tasks"} · Hermes profile runners
+          pull from here
         </p>
       </header>
       {control.paused && <PausedBanner />}

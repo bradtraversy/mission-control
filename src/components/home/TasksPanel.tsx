@@ -7,9 +7,11 @@ type Props = {
 };
 
 const AGENT_STYLE: Record<string, string> = {
-  travis: "bg-accent/15 text-accent",
+  sysadmin: "bg-sky-400/15 text-sky-300",
+  creator: "bg-fuchsia-400/15 text-fuchsia-300",
+  secretary: "bg-violet-400/15 text-violet-300",
   "claude-code": "bg-emerald-400/15 text-emerald-300",
-  "claude-cowork": "bg-sky-400/15 text-sky-300",
+  "claude-cowork": "bg-orange-400/15 text-orange-300",
   brad: "bg-surface-2 text-foreground",
 };
 
@@ -37,7 +39,7 @@ export function TasksPanel({ tasks }: Props) {
       <CardBody className="space-y-2">
         {tasks.length === 0 ? (
           <p className="text-base text-muted">
-            No queued or in-progress tasks. Ping Travis or drop a new task in
+            No queued or in-progress tasks. Ping sysadmin or drop a new task in
             the Tasks tab.
           </p>
         ) : (

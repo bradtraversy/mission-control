@@ -17,7 +17,7 @@ const SOURCE_FILTERS: ("all" | SessionSource)[] = [
 const SOURCE_LABEL: Record<"all" | SessionSource, string> = {
   all: "All",
   "claude-code": "Claude Code",
-  openclaw: "Travis",
+  openclaw: "OpenClaw",
 };
 
 const SOURCE_STYLE: Record<SessionSource, string> = {

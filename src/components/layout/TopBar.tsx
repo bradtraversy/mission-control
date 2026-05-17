@@ -1,7 +1,7 @@
 import { Command, Search } from "lucide-react";
 import { getTaskControl } from "@/lib/parsers/tasks";
 import { PauseToggle } from "./PauseToggle";
-import { PingTravisButton } from "./PingTravisButton";
+import { PingAgentButton } from "./PingTravisButton";
 import { RefreshButton } from "./RefreshButton";
 
 export async function TopBar() {
@@ -25,7 +25,7 @@ export async function TopBar() {
         </button>
 
         <PauseToggle paused={control.paused} />
-        <PingTravisButton />
+        <PingAgentButton />
 
         <RefreshButton />
       </div>

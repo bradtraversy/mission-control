@@ -29,6 +29,7 @@ export type NetworkConnectivity = {
 export type NetworkAutomation = {
   id: string;
   name: string;
+  source: string | null;
   owner: string | null;
   host: string | null;
   scheduleHuman: string | null;
@@ -77,11 +78,21 @@ export type NetworkRegistryDrift = {
   ghosts: NetworkGhost[];
 };
 
+export type NetworkStagedAutomation = {
+  profile: string;
+  jobId: string;
+  name: string;
+  schedule: string;
+  state: string;
+  delivery: string;
+};
+
 export type NetworkSnapshot = {
   connectivity: NetworkConnectivity;
   machines: NetworkMachine[];
   automations: NetworkAutomation[];
   automationsUpdatedAt: string | null;
+  stagedAutomations: NetworkStagedAutomation[];
   crons: NetworkCronJob[];
   cronsUpdatedAt: string | null;
   registryDrift: NetworkRegistryDrift;
@@ -106,8 +117,51 @@ function toTrafficLight(value: unknown): NetworkAutomation["trafficLight"] {
   return "unknown";
 }
 
+function cleanMarkdownCell(value: string): string {
+  return value
+    .trim()
+    .replace(/^`|`$/g, "")
+    .replace(/\\\|/g, "|")
+    .trim();
+}
+
+export function parseHermesStagedAutomations(
+  markdown: string,
+): NetworkStagedAutomation[] {
+  const lines = markdown.split(/\r?\n/);
+  const headingIndex = lines.findIndex((line) =>
+    /^#{2,}\s+.*Hermes cutover staging/i.test(line.trim()),
+  );
+  if (headingIndex === -1) return [];
+
+  const rows: NetworkStagedAutomation[] = [];
+  for (const line of lines.slice(headingIndex + 1)) {
+    const trimmed = line.trim();
+    if (/^#{2,}\s+/.test(trimmed)) break;
+    if (!trimmed.startsWith("|") || trimmed.includes("---")) continue;
+
+    const cells = trimmed
+      .slice(1, trimmed.endsWith("|") ? -1 : undefined)
+      .split("|")
+      .map(cleanMarkdownCell);
+    if (cells[0]?.toLowerCase() === "profile") continue;
+    if (cells.length < 6) continue;
+
+    rows.push({
+      profile: cells[0],
+      jobId: cells[1],
+      name: cells[2],
+      schedule: cells[3],
+      state: cells[4],
+      delivery: cells.slice(5).join("|").trim(),
+    });
+  }
+
+  return rows;
+}
+
 export async function getNetworkSnapshot(): Promise<NetworkSnapshot> {
-  const [connectivityRaw, diskRaw, servicesRaw, automationsRaw, cronsRaw] =
+  const [connectivityRaw, diskRaw, servicesRaw, automationsRaw, cronsRaw, automationsDoc] =
     await Promise.all([
       readJson<{
         last_checked?: string;
@@ -153,6 +207,7 @@ export async function getNetworkSnapshot(): Promise<NetworkSnapshot> {
           last_run?: string | null;
           last_status?: string;
           detail?: string;
+          source?: string;
           traffic_light?: string;
           stale?: boolean;
         }>;
@@ -194,6 +249,9 @@ export async function getNetworkSnapshot(): Promise<NetworkSnapshot> {
           }>;
         }>;
       }>("Network/data/cron-jobs.json"),
+      fs
+        .readFile(resolveVaultRelativePath("Network/Automations.md"), "utf-8")
+        .catch(() => ""),
     ]);
 
   const servicesByHost = new Map<
@@ -231,6 +289,7 @@ export async function getNetworkSnapshot(): Promise<NetworkSnapshot> {
     (t) => ({
       id: t.id,
       name: t.name ?? t.id,
+      source: t.source ?? null,
       owner: t.owner ?? null,
       host: t.host ?? null,
       scheduleHuman: t.schedule_human ?? null,
@@ -294,6 +353,7 @@ export async function getNetworkSnapshot(): Promise<NetworkSnapshot> {
     machines,
     automations,
     automationsUpdatedAt: automationsRaw?.generated_at ?? null,
+    stagedAutomations: parseHermesStagedAutomations(automationsDoc),
     crons,
     cronsUpdatedAt: cronsRaw?.last_updated ?? null,
     registryDrift,

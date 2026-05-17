@@ -9,7 +9,7 @@ export default async function Page() {
       <header className="space-y-1">
         <h1 className="text-xl font-medium tracking-tight">Sessions</h1>
         <p className="text-[14px] text-muted">
-          Unified feed from Claude and Travis · {sessions.length} total ·
+          Unified feed from Claude and OpenClaw · {sessions.length} total ·
           newest first
         </p>
       </header>
