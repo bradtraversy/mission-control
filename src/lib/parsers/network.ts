@@ -117,6 +117,15 @@ function toTrafficLight(value: unknown): NetworkAutomation["trafficLight"] {
   return "unknown";
 }
 
+export function normalizeNetworkAutomationOwner(
+  owner: string | null | undefined,
+): string | null {
+  const normalized = owner?.trim();
+  if (!normalized) return null;
+  if (normalized.toLowerCase() === "travis") return null;
+  return normalized;
+}
+
 function cleanMarkdownCell(value: string): string {
   return value
     .trim()
@@ -290,7 +299,7 @@ export async function getNetworkSnapshot(): Promise<NetworkSnapshot> {
       id: t.id,
       name: t.name ?? t.id,
       source: t.source ?? null,
-      owner: t.owner ?? null,
+      owner: normalizeNetworkAutomationOwner(t.owner),
       host: t.host ?? null,
       scheduleHuman: t.schedule_human ?? null,
       lastRun: t.last_run ?? null,

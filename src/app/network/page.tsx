@@ -21,7 +21,6 @@ const LIGHT_STYLE: Record<NetworkAutomation["trafficLight"], string> = {
 const OWNER_STYLE: Record<string, string> = {
   claude: "bg-slate-400/15 text-slate-300",
   cowork: "bg-orange-400/15 text-orange-300",
-  travis: "bg-accent/15 text-accent",
   sysadmin: "bg-sky-400/15 text-sky-300",
   creator: "bg-fuchsia-400/15 text-fuchsia-300",
   secretary: "bg-violet-400/15 text-violet-300",
@@ -32,7 +31,6 @@ const OWNER_STYLE: Record<string, string> = {
 const OWNER_TOOLTIP: Record<string, string> = {
   claude: "Ask Claude Code directly. Edits vault skill files + re-registers.",
   cowork: "Ask Cowork (desktop Claude) directly. Same scheduled-tasks MCP capabilities as Claude Code.",
-  travis: "Legacy OpenClaw owner value. Retired; use sysadmin, creator, or secretary instead.",
   sysadmin: "Hermes sysadmin profile. Queue Tasks with agent: sysadmin for homelab/network work.",
   creator: "Hermes creator profile. Owns content/research delivery jobs after cutover.",
   secretary: "Hermes secretary profile. Owns calendar/admin digest jobs after cutover.",
